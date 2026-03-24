@@ -54,6 +54,11 @@
                                 <label class="font-weight-bold text-muted small">Lugar Exacto</label>
                                 <input type="text" name="lugar_evento" class="form-control" placeholder="Ej: Pasillo principal, Bodega 2..." value="{{ old('lugar_evento') }}" required>
                             </div>
+                            <div class="col-md-4 form-group mb-3" id="campo_incapacidad">
+                                <label class="font-weight-bold text-muted small">Días de Incapacidad</label>
+                                <input type="number" name="dias_incapacidad" class="form-control" placeholder="0" min="0" value="{{ old('dias_incapacidad', 0) }}">
+                                <small class="text-info">Coloque 0 si no hubo incapacidad.</small>
+                            </div>
                         </div>
 
                         <div class="form-group mb-4">
@@ -72,4 +77,23 @@
         </div>
     </div>
 </div>
+@section('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const tipoEvento = document.getElementById('tipo_evento');
+        const inputIncapacidad = document.querySelector('input[name="dias_incapacidad"]');
+
+        tipoEvento.addEventListener('change', function() {
+            if (this.value === 'Incidente') {
+                inputIncapacidad.value = 0;
+                inputIncapacidad.readOnly = true;
+                inputIncapacidad.classList.add('bg-light');
+            } else {
+                inputIncapacidad.readOnly = false;
+                inputIncapacidad.classList.remove('bg-light');
+            }
+        });
+    });
+</script>
+@endsection
 @endsection

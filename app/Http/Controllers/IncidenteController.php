@@ -74,7 +74,7 @@ class IncidenteController extends Controller
         }
         // =========================================
 
-        return redirect()->route('home')->with('success', 'Tu reporte ha sido enviado exitosamente al área de SST.');
+        return redirect()->route('incidentes.index')->with('success', 'Tu reporte ha sido enviado exitosamente al área de SST.');
     }
 
     /**
