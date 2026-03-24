@@ -109,7 +109,7 @@
             </div>
 
             <div class="text-center my-auto">
-                <img src="{{ asset('assets/img/user-tutor.png') }}" alt="Ilustración SST" style="max-width: 60%; filter: drop-shadow(0px 10px 10px rgba(0,0,0,0.3));">
+                <img src="{{ asset('assets/img/synergy.png') }}" alt="Ilustración SST" style="max-width: 60%; filter: drop-shadow(0px 10px 10px rgba(0,0,0,0.3));">
                 <h5 class="mt-4 font-weight-bold" style="color: #fff;">Gestión Segura y Confiable</h5>
                 <p class="small text-white-50">Protegiendo el capital más importante de su empresa.</p>
             </div>
