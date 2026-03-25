@@ -24,7 +24,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('sgsst:notificar-actividades')->dailyAt('08:00');
+        $schedule->command('sgsst:notificar-actividades')->dailyAt('09:00');
+        $schedule->command('notificar:plan-trabajo')->dailyAt('08:00');
     }
 
     /**
