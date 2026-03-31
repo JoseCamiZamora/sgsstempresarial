@@ -49,11 +49,21 @@
                             <i class="fa fa-history mr-2"></i> Historial 0312
                         </a>
                     </li>
-                    <li class="nav-item mb-1">
-                        <a class="nav-link text-secondary py-1" href="{{ route('evaluacion.crear', ['empresaId' => $empresaPerfil->id]) }}">
-                            <i class="fa fa-check mr-2 text-success"></i> Nueva Autoevaluación
-                        </a>
-                    </li>
+                    @if($empresaPerfil)
+                        {{-- CASO A: La empresa ya existe, mostramos el link normal --}}
+                        <li class="nav-item mb-1">
+                            <a class="nav-link text-secondary py-1" href="{{ route('evaluacion.crear', ['empresaId' => $empresaPerfil->id]) }}">
+                                <i class="fa fa-check mr-2 text-success"></i> Nueva Autoevaluación
+                            </a>
+                        </li>
+                    @else
+                        {{-- CASO B: No hay empresa, mostramos el link con alerta --}}
+                        <li class="nav-item mb-1">
+                            <a class="nav-link text-secondary py-1" href="javascript:void(0);" onclick="alertaSinEmpresa()">
+                                <i class="fa fa-lock mr-2 text-muted"></i> Nueva Autoevaluación
+                            </a>
+                        </li>
+                    @endif
                     @endhasanyrole
 
                     {{-- SECCIÓN: REPORTES Y SOPORTE --}}
@@ -453,5 +463,25 @@ document.addEventListener("DOMContentLoaded", function() {
             cutoutPercentage: 70,
         },
     });
+</script>
+<script>
+function alertaSinEmpresa() {
+    Swal.fire({
+        title: '¡Paso previo requerido!',
+        text: "Antes de realizar una autoevaluación, debes registrar los datos de la empresa (NIT, Riesgo, Empleados).",
+        icon: 'info',
+        showCancelButton: true,
+        confirmButtonColor: '#4e73df',
+        cancelButtonColor: '#858796',
+        confirmButtonText: '<i class="fa fa-plus"></i> Registrar Empresa Ahora',
+        cancelButtonText: 'Después',
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Cambia 'perfil.create' por el nombre de tu ruta de registro de empresa
+            window.location.href = "{{ route('perfil.index') }}"; 
+        }
+    });
+}
 </script>
 @endsection
