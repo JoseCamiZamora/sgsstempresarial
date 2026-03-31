@@ -32,18 +32,20 @@
                             </div>
                             
                             <div class="col-md-8">
-                                <div class="form-group">
-                                    <label>Nombre de la Empresa</label>
-                                    <input type="text" name="nombre_empresa" class="form-control" value="{{ $perfil->nombre_empresa ?? '' }}" required>
-                                </div>
                                 <div class="row">
-                                    <div class="col-md-6 form-group">
+                                    <div class="col-md-3 form-group">
                                         <label>NIT</label>
                                         <input type="text" name="nit" class="form-control" value="{{ $perfil->nit ?? '' }}" required>
                                     </div>
-                                    <div class="col-md-6 form-group">
-                                        <label>Licencia SST</label>
-                                        <input type="text" name="licencia_sst" class="form-control" value="{{ $perfil->licencia_sst ?? '' }}">
+                                    <div class="col-md-9 form-group">
+                                        <label>Nombre de la Empresa</label>
+                                        <input type="text" name="razon_social" class="form-control" value="{{ $perfil->razon_social ?? '' }}" required>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12 form-group">
+                                        <label>Actividad Económica</label>
+                                        <textarea name="actividad_economica" class="form-control" rows="3" required>{{ $perfil->actividad_economica ?? '' }}</textarea>
                                     </div>
                                 </div>
                             </div>
@@ -51,6 +53,41 @@
 
                         <hr>
 
+                        <h6 class="font-weight-bold text-info mb-3"><i class="fa fa-clipboard-check mr-2"></i>Datos para Evaluación Resolución 0312</h6>
+                        <div class="row bg-light p-3 rounded mb-4 border">
+                            <div class="col-md-6 form-group mb-0">
+                                <label class="font-weight-bold text-muted small">
+                                    Número Total de Trabajadores <span class="text-danger">*</span>
+                                </label>
+                                <input type="number" 
+                                       name="numero_trabajadores" 
+                                       class="form-control @error('numero_trabajadores') is-invalid @enderror" 
+                                       value="{{ old('numero_trabajadores', $perfil->numero_trabajadores ?? '') }}" 
+                                       min="1" 
+                                       required 
+                                       placeholder="Ej: 15">
+                                @error('numero_trabajadores')
+                                    <span class="invalid-feedback">{{ $message }}</span>
+                                @enderror
+                            </div>
+
+                            <div class="col-md-6 form-group mb-0">
+                                <label class="font-weight-bold text-muted small">
+                                    Nivel de Riesgo ARL <span class="text-danger">*</span>
+                                </label>
+                                <select name="nivel_riesgo" class="form-control @error('nivel_riesgo') is-invalid @enderror" required>
+                                    <option value="" disabled {{ old('nivel_riesgo', $perfil->nivel_riesgo ?? '') == '' ? 'selected' : '' }}>Seleccione el riesgo...</option>
+                                    <option value="1" {{ old('nivel_riesgo', $perfil->nivel_riesgo ?? '') == '1' ? 'selected' : '' }}>Riesgo I (Mínimo)</option>
+                                    <option value="2" {{ old('nivel_riesgo', $perfil->nivel_riesgo ?? '') == '2' ? 'selected' : '' }}>Riesgo II (Bajo)</option>
+                                    <option value="3" {{ old('nivel_riesgo', $perfil->nivel_riesgo ?? '') == '3' ? 'selected' : '' }}>Riesgo III (Medio)</option>
+                                    <option value="4" {{ old('nivel_riesgo', $perfil->nivel_riesgo ?? '') == '4' ? 'selected' : '' }}>Riesgo IV (Alto)</option>
+                                    <option value="5" {{ old('nivel_riesgo', $perfil->nivel_riesgo ?? '') == '5' ? 'selected' : '' }}>Riesgo V (Máximo)</option>
+                                </select>
+                                @error('nivel_riesgo')
+                                    <span class="invalid-feedback">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
                         <div class="row">
                             <div class="col-md-6 form-group">
                                 <label>Representante Legal</label>

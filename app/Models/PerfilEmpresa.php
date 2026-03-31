@@ -10,17 +10,21 @@ class PerfilEmpresa extends Model
     use HasFactory;
 
     // Forzamos el nombre de la tabla en español
-    protected $table = 'perfil_empresa';
+    protected $table = 'perfil_empresas';
 
     // Campos que se pueden llenar masivamente
     protected $fillable = [
-        'nombre_empresa',
+        'razon_social',
         'nit',
+        'representante_legal',
+        'actividad_economica',
+        'numero_trabajadores',
+        'nivel_riesgo',
         'direccion',
         'telefono',
         'correo_contacto',
-        'representante_legal',
-        'licencia_sst',
-        'logo_path'
+        'logo_path',
     ];
+
+    
 }

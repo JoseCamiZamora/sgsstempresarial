@@ -19,6 +19,7 @@ use App\Http\Controllers\MatrizRiesgoController;
 use App\Http\Controllers\IncidenteController;
 use App\Http\Controllers\PlanTrabajoController;
 use App\Http\Controllers\Evaluacion0312Controller;
+use App\Http\Controllers\EvaluacionController;
 
 Route::get('/', function () {
     return redirect('/login');
@@ -59,12 +60,14 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('evaluacion/crear', [App\Http\Controllers\Evaluacion0312Controller::class, 'create'])->name('evaluacion.create');
         Route::resource('evaluacion', App\Http\Controllers\Evaluacion0312Controller::class);
         Route::resource('item-estandar', App\Http\Controllers\ItemEstandarController::class);
-        Route::get('evaluacion/{id}/pdf', [App\Http\Controllers\Evaluacion0312Controller::class, 'descargarPDF'])->name('evaluacion.pdf');
         Route::resource('estadistica-mensual', App\Http\Controllers\EstadisticaMensualController::class);
         Route::get('indicadores', [App\Http\Controllers\IndicadorController::class, 'index'])->name('indicadores.index');
         Route::resource('configuracion/estadisticas', App\Http\Controllers\EstadisticaMensualController::class)->names('estadisticas');
         Route::get('configuracion/perfil', [App\Http\Controllers\PerfilEmpresaController::class, 'index'])->name('perfil.index');
         Route::post('configuracion/perfil', [App\Http\Controllers\PerfilEmpresaController::class, 'store'])->name('perfil.store');
+        Route::get('/empresa/{empresaId}/evaluar', [EvaluacionController::class, 'crearEvaluacion'])->name('evaluacion.crear');
+        Route::resource('evaluacion', App\Http\Controllers\EvaluacionController::class);
+        Route::get('evaluacion/{id}/pdf', [App\Http\Controllers\EvaluacionController::class, 'descargarPDF'])->name('evaluacion.pdf');
     });
 
     // 🛡️ Zona exclusiva para Gerencia (Solo lectura/reportes)

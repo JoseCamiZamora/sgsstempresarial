@@ -9,8 +9,17 @@ class ItemEstandar extends Model
 {
     use HasFactory;
 
-    // 👇 AGREGA ESTA LÍNEA 👇
+   // Asegúrate de que tu tabla esté bien referenciada
     protected $table = 'item_estandares';
 
-    protected $fillable = ['nombre', 'porcentaje', 'activo'];
+    // 👇 ESTA ES LA CLAVE: La lista de campos permitidos
+    protected $fillable = [
+        'ciclo',
+        'numeral',
+        'nombre',
+        'modo_verificacion',
+        'tipo_plantilla',
+        'porcentaje',
+        'activo',
+    ];
 }

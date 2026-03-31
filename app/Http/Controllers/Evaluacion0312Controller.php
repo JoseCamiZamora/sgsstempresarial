@@ -11,19 +11,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 class Evaluacion0312Controller extends Controller
 {
 
-    // 1. LISTAR (Index)
-    public function index() {
-
-        // 1. Traemos el historial de evaluaciones
-        $evaluaciones = Evaluacion0312::with('user')->orderBy('fecha_evaluacion', 'desc')->get();
-
-        // 2. 👇 CALCULAMOS LA SUMA TOTAL DE LOS ESTÁNDARES CONFIGURADOS 👇
-        // Esto es necesario para que la alerta de la vista no de error
-        $sumaTotal = \App\Models\ItemEstandar::sum('porcentaje');
-
-        // 3. Enviamos ambas variables a la vista
-        return view('evaluaciones.index', compact('evaluaciones', 'sumaTotal'));
-    }
+   
 
     public function create() {
         // Traemos los ítems que tú configuraste en el módulo de "Sistema"

@@ -18,7 +18,7 @@ class PerfilEmpresaController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'nombre_empresa' => 'required|string|max:255',
+            'razon_social' => 'required|string|max:255',
             'nit' => 'required|string|max:20',
             'direccion' => 'nullable|string',
             'telefono' => 'nullable|string',

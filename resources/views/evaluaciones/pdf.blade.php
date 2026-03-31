@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Reporte de Autoevaluación - {{ $perfil->nombre_empresa ?? 'Sinergia SST' }}</title>
+    <title>Reporte de Autoevaluación - {{ $perfil->razon_social ?? 'Sinergia SST' }}</title>
     <style>
         @page { margin: 2cm; }
         body { font-family: 'Helvetica', 'Arial', sans-serif; color: #333; font-size: 11pt; line-height: 1.4; }
@@ -48,12 +48,12 @@
                     <img src="{{ $logoBase64 }}" class="logo" style="max-width: 120px;">
                 @else
                     <div style="background: #eee; padding: 10px; border: 1px solid #ccc;">
-                        <strong>{{ $perfil->nombre_empresa ?? 'Sinergia SST' }}</strong>
+                        <strong>{{ $perfil->razon_social ?? 'Sinergia SST' }}</strong>
                     </div>
                 @endif
             </td>
             <td style="width: 50%;">
-                <p class="empresa-nombre">{{ $perfil->nombre_empresa ?? 'Sinergia SST' }}</p>
+                <p class="empresa-nombre">{{ $perfil->razon_social ?? 'Sinergia SST' }}</p>
                 <p class="empresa-nit">NIT: {{ $perfil->nit ?? '000.000.000-0' }}</p>
                 <p style="font-size: 9pt; margin: 0;">Licencia: {{ $perfil->licencia_sst ?? 'N/A' }}</p>
             </td>
@@ -89,47 +89,39 @@
                 <td style="text-align: center;">{{ $index + 1 }}</td>
                 <td>{{ $item->nombre }}</td>
                 <td style="text-align: center;">{{ $item->porcentaje }}%</td>
-                <td>
-                    @php
-                        $cumple = is_array($evaluacion->respuestas) && in_array($item->porcentaje, $evaluacion->respuestas);
-                    @endphp
-                    @if($cumple)
-                        <span class="cumple-si">CUMPLE</span>
-                    @else
-                        <span class="cumple-no">NO CUMPLE</span>
-                    @endif
+                <td style="text-align: center; font-weight: bold; color: {{ in_array($item->id, $respuestasIds) ? '#28a745' : '#dc3545' }};">
+                    {{ in_array($item->id, $respuestasIds) ? 'CUMPLE' : 'NO CUMPLE' }}
                 </td>
             </tr>
             @endforeach
         </tbody>
     </table>
-
     <div class="puntaje-container">
         <table width="100%" style="border: none;">
             <tr>
                 <td style="border: none; width: 50%; font-size: 12pt;">
-                    <strong>PUNTAJE TOTAL:</strong> {{ $evaluacion->puntaje_total }}%
+                    <strong>PUNTAJE TOTAL:</strong> {{ number_format($evaluacion->puntaje_final, 1) }}%
                 </td>
                 <td style="border: none; width: 50%;" class="estado-box">
                     VALORACIÓN: 
-                    <span style="color: {{ $evaluacion->puntaje_total >= 85 ? '#1a7e33' : ($evaluacion->puntaje_total >= 60 ? '#f39c12' : '#d63031') }}">
-                        {{ strtoupper($evaluacion->estado_resultado) }}
+                    <span style="color: {{ $evaluacion->puntaje_final < 60 ? '#dc3545' : ($evaluacion->puntaje_final <= 85 ? '#ffc107' : '#28a745') }};">
+                        {{ strtoupper($evaluacion->nivel_madurez) }}
                     </span>
                 </td>
             </tr>
         </table>
     </div>
-
+    <br>
     <div class="footer-firmas">
         <div class="firma-box">
-            <br><br>
+            <br>
             <strong>{{ $evaluacion->user->name }}</strong><br>
             Responsable SG-SST<br>
             Licencia: {{ $perfil->licencia_sst }}
         </div>
         <div class="espacio-firma"></div>
         <div class="firma-box">
-            <br><br>
+            <br>
             <strong>{{ $perfil->representante_legal ?? 'Firma Representante' }}</strong><br>
             Representante Legal<br>
             NIT/CC: {{ $perfil->nit }}

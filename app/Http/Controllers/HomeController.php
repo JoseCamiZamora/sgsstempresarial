@@ -15,6 +15,7 @@ use App\Solicitudes;
 use App\Models\MatrizRiesgo;
 use App\Models\Incidente;
 use App\Models\Evaluacion0312;
+use App\Models\PerfilEmpresa;
 
 
 use Auth;
@@ -100,9 +101,7 @@ class HomeController extends Controller
         ];
 
         // Si no hay ninguna, el puntaje es 0
-        $ultimaEvaluacion = Evaluacion0312::latest()->first();
-        $puntaje0312 = $ultimaEvaluacion ? $ultimaEvaluacion->puntaje_total : 0;
-        $estado0312 = $ultimaEvaluacion ? $ultimaEvaluacion->estado_resultado : 'SIN EVALUAR';
+        
 
         // 📊 DATOS PARA LA DONA DE PESOS LEGALES
         $estandaresConfig = \App\Models\ItemEstandar::where('activo', true)->get();
@@ -110,12 +109,16 @@ class HomeController extends Controller
         $labelsEstandares = $estandaresConfig->pluck('nombre')->toArray();
         $valoresEstandares = $estandaresConfig->pluck('porcentaje')->toArray();
 
-        $ultimaEvaluacion = \App\Models\Evaluacion0312::latest('fecha_evaluacion')->first();
-    
-        // Si existe una evaluación, formateamos la fecha, si no, ponemos un mensaje
-        $fecha0312 = $ultimaEvaluacion 
-                 ? \Carbon\Carbon::parse($ultimaEvaluacion->fecha_evaluacion)->format('d/m/Y') 
-                 : 'Sin registros';
+        // Buscamos la última evaluación registrada
+        $ultimaEval = \App\Models\Evaluacion::latest('fecha_evaluacion')->first();
+
+        // Preparamos las variables para la vista
+        $puntaje0312 = $ultimaEval ? $ultimaEval->puntaje_final : 0;
+        $estado0312  = $ultimaEval ? $ultimaEval->nivel_madurez : 'SIN EVALUACIÓN';
+        $fecha0312   = $ultimaEval ? \Carbon\Carbon::parse($ultimaEval->fecha_evaluacion)->format('d/m/Y') : 'N/A';
+
+        $empresaPerfil = PerfilEmpresa::first();
+        //dd($empresaPerfil);
 
         return view('home', compact(
             'riesgosCriticos', 
@@ -126,7 +129,7 @@ class HomeController extends Controller
             'graficoIncidentes', 'graficoRiesgos',
             'puntaje0312', 'estado0312',
             'labelsEstandares', 'valoresEstandares',
-            'fecha0312'
+            'fecha0312','empresaPerfil'
         ));
     }
     

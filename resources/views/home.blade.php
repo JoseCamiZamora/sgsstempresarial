@@ -50,7 +50,7 @@
                         </a>
                     </li>
                     <li class="nav-item mb-1">
-                        <a class="nav-link text-secondary py-1" href="{{ route('evaluacion.create') }}">
+                        <a class="nav-link text-secondary py-1" href="{{ route('evaluacion.crear', ['empresaId' => $empresaPerfil->id]) }}">
                             <i class="fa fa-check mr-2 text-success"></i> Nueva Autoevaluación
                         </a>
                     </li>
@@ -218,28 +218,35 @@
                                     <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
                                         Puntaje Autoevaluación Estándares Mínimos (Resolución 0312)
                                     </div>
+                                    
                                     <div class="row no-gutters align-items-center">
                                         <div class="col-auto">
-                                            <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{ $puntaje0312 }}%</div>
+                                            <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">
+                                                {{ number_format($puntaje0312, 1) }}%
+                                            </div>
                                         </div>
                                         <div class="col">
-                                            <div class="progress progress-sm mr-2" style="height: 20px; background-color: #eaecf4; border-radius: 10px;">
+                                            <div class="progress progress-sm mr-2" style="height: 15px; background-color: #eaecf4; border-radius: 10px;">
                                                 @php
-                                                    $colorBarra = '#e74a3b'; 
-                                                    if($puntaje0312 >= 60 && $puntaje0312 <= 85) $colorBarra = '#f6c23e'; 
-                                                    if($puntaje0312 > 85) $colorBarra = '#1cc88a'; 
+                                                    // Lógica de colores basada en la norma
+                                                    $colorBarra = '#e74a3b'; // Rojo (Crítico)
+                                                    if($puntaje0312 >= 60 && $puntaje0312 <= 85) $colorBarra = '#f6c23e'; // Amarillo (Moderado)
+                                                    if($puntaje0312 > 85) $colorBarra = '#1cc88a'; // Verde (Aceptable)
                                                 @endphp
-                                                <div class="progress-bar shadow-sm" role="progressbar" 
-                                                    style="width: {{ $puntaje0312 }}%; background-color: {{ $colorBarra }}; border-radius: 10px; height: 22px;" 
+                                                <div class="progress-bar shadow-sm progress-bar-striped progress-bar-animated" 
+                                                    role="progressbar" 
+                                                    style="width: {{ $puntaje0312 }}%; background-color: {{ $colorBarra }}; border-radius: 10px;height: 22px;" 
                                                     aria-valuenow="{{ $puntaje0312 }}" aria-valuemin="0" aria-valuemax="100">
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="mt-2 d-flex align-items-center">
-                                        <span class="badge badge-pill" style="background-color: {{ $colorBarra }}; color: white;">
-                                            ESTADO: {{ $estado0312 }}
+
+                                    <div class="mt-3 d-flex align-items-center">
+                                        <span class="badge badge-pill px-3 py-2" style="background-color: {{ $colorBarra }}; color: white; font-size: 0.75rem;">
+                                            <i class="fa fa-shield mr-1"></i> ESTADO: {{ strtoupper($estado0312) }}
                                         </span>
+                                        
                                         <small class="text-muted ml-3">
                                             <i class="fa fa-calendar-check-o mr-1"></i> 
                                             Última evaluación: <strong>{{ $fecha0312 }}</strong>
@@ -247,14 +254,21 @@
                                     </div>
                                 </div>
                                 <div class="col-auto">
-                                    <i class="fa fa-thermometer-half fa-2x text-gray-300"></i>
+                                    <i class="fa {{ $puntaje0312 > 85 ? 'fa-check-circle' : 'fa-exclamation-triangle' }} fa-3x text-gray-300"></i>
                                 </div>
                             </div>
                             
+                            <hr>
                             <div class="row mt-3 text-center text-xs font-weight-bold text-gray-600">
-                                <div class="col-4 border-right">🔴 CRÍTICO <br> (&lt; 60%)</div>
-                                <div class="col-4 border-right">🟡 MODERADO <br> (60% - 85%)</div>
-                                <div class="col-4">🟢 ACEPTABLE <br> (&gt; 85%)</div>
+                                <div class="col-4 border-right">
+                                    <span class="text-danger">●</span> CRÍTICO <br> (< 60%)
+                                </div>
+                                <div class="col-4 border-right">
+                                    <span class="text-warning">●</span> MODERADO <br> (60% - 85%)
+                                </div>
+                                <div class="col-4">
+                                    <span class="text-success">●</span> ACEPTABLE <br> (> 85%)
+                                </div>
                             </div>
                         </div>
                     </div>
