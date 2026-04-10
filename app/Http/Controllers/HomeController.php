@@ -118,7 +118,11 @@ class HomeController extends Controller
         $fecha0312   = $ultimaEval ? \Carbon\Carbon::parse($ultimaEval->fecha_evaluacion)->format('d/m/Y') : 'N/A';
 
         $empresaPerfil = PerfilEmpresa::first();
-        //dd($empresaPerfil);
+        
+        // NUEVO: Contamos los empleados registrados
+        $totalEmpleados = \App\Models\Empleado::count();
+
+        $totalEpps = \App\Models\Epp::count();
 
         return view('home', compact(
             'riesgosCriticos', 
@@ -129,7 +133,8 @@ class HomeController extends Controller
             'graficoIncidentes', 'graficoRiesgos',
             'puntaje0312', 'estado0312',
             'labelsEstandares', 'valoresEstandares',
-            'fecha0312','empresaPerfil'
+            'fecha0312','empresaPerfil','totalEmpleados',
+            'totalEpps'
         ));
     }
     

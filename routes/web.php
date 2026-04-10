@@ -20,6 +20,8 @@ use App\Http\Controllers\IncidenteController;
 use App\Http\Controllers\PlanTrabajoController;
 use App\Http\Controllers\Evaluacion0312Controller;
 use App\Http\Controllers\EvaluacionController;
+use App\Http\Controllers\EmpleadoController;
+use App\Http\Controllers\EntregaEppController;
 
 Route::get('/', function () {
     return redirect('/login');
@@ -68,6 +70,11 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/empresa/{empresaId}/evaluar', [EvaluacionController::class, 'crearEvaluacion'])->name('evaluacion.crear');
         Route::resource('evaluacion', App\Http\Controllers\EvaluacionController::class);
         Route::get('evaluacion/{id}/pdf', [App\Http\Controllers\EvaluacionController::class, 'descargarPDF'])->name('evaluacion.pdf');
+        Route::resource('empleados', EmpleadoController::class);
+        Route::post('empleados/{id}/subir-documento', [EmpleadoController::class, 'subirDocumento'])->name('empleados.subirDoc');
+        Route::resource('epps', EppController::class);
+        Route::post('entrega-epp', [EntregaEppController::class, 'store'])->name('entrega-epp.store');
+        Route::get('entrega-epp/{id}/pdf', [App\Http\Controllers\EntregaEppController::class, 'generarPdf'])->name('entrega-epp.pdf');
     });
 
     // 🛡️ Zona exclusiva para Gerencia (Solo lectura/reportes)

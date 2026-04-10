@@ -41,4 +41,9 @@ class User extends Authenticatable
     // {
     //     return 'identificacion';
     // }
+    public function empleado()
+    {
+        // Esto le dice a Laravel que busque en la tabla 'empleados' el campo 'user_id'
+        return $this->hasOne(Empleado::class, 'user_id');
+    }
 }

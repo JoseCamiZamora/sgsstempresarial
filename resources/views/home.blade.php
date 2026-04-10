@@ -44,16 +44,17 @@
                         Auditoría Legal
                     </div>
 
-                    <li class="nav-item mb-1">
-                        <a class="nav-link text-secondary py-1" href="{{ route('evaluacion.index') }}">
-                            <i class="fa fa-history mr-2"></i> Historial 0312
-                        </a>
-                    </li>
+                    
                     @if($empresaPerfil)
                         {{-- CASO A: La empresa ya existe, mostramos el link normal --}}
                         <li class="nav-item mb-1">
                             <a class="nav-link text-secondary py-1" href="{{ route('evaluacion.crear', ['empresaId' => $empresaPerfil->id]) }}">
                                 <i class="fa fa-check mr-2 text-success"></i> Nueva Autoevaluación
+                            </a>
+                        </li>
+                        <li class="nav-item mb-1">
+                            <a class="nav-link text-secondary py-1" href="{{ route('evaluacion.index') }}">
+                                <i class="fa fa-history mr-2"></i> Historial 0312
                             </a>
                         </li>
                     @else
@@ -113,6 +114,25 @@
                     <li class="nav-item mb-1">
                         <a class="nav-link text-secondary py-1" href="{{ route('usuarios.index') }}">
                             <i class="fa fa-users mr-2 text-dark"></i> Gestión de Usuarios
+                        </a>
+                    </li>
+                    
+                    <hr class="my-2">
+                    <div class="sidebar-heading text-muted small font-weight-bold px-3 mb-2 text-uppercase">
+                        Suministros y Dotación
+                    </div>
+
+                    <li class="nav-item {{ request()->routeIs('epps.*') ? 'active' : '' }}">
+                        <a class="nav-link" href="{{ route('epps.index') }}">
+                            <i class="fa fa-fw fa-boxes"></i>
+                            <span>Catálogo de EPP</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="fa fa-fw fa-clipboard-check"></i>
+                            <span>Registro de Entregas</span>
                         </a>
                     </li>
                     @endhasanyrole
@@ -216,6 +236,44 @@
                               </div>
                           </div>
                       </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <div class="card border-left-success shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                        Personal Registrado</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $totalEmpleados }} Empleados</div>
+                                    <a href="{{ route('empleados.index') }}" class="btn btn-sm btn-outline-success mt-3 border-0 px-0">
+                                        Ir al directorio <i class="fa fa-arrow-right ml-1"></i>
+                                    </a>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fa fa-users fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-info shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                        Catálogo de EPP</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $totalEpps }} Elementos</div>
+                                    <a href="{{ route('epps.index') }}" class="btn btn-sm btn-link text-info p-0 mt-2">
+                                        Ver catálogo <i class="fa fa-chevron-right ml-1"></i>
+                                    </a>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fa fa-shield-alt fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
