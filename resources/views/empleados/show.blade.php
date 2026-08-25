@@ -42,7 +42,7 @@
                 Swal.fire({
                     icon: 'success',
                     title: 'Código de firma generado',
-                    html: 'Anótelo y compártalo con el empleado ahora — no podrá volver a verlo.<br><h3 class="mt-2">{{ session("portal_code_generated") }}</h3>',
+                    html: 'Anótelo y compártalo con el empleado ahora — no podrá volver a verlo.<br><h3 class="mt-2">{{ session("portal_code_generated") }}</h3><p class="small text-muted mb-0">Enlace: {{ route("employee-portal.login") }}</p>',
                     confirmButtonText: 'Listo',
                 });
             });
@@ -83,6 +83,14 @@
                 <div class="card-body">
                     <h6 class="font-weight-bold text-uppercase mb-2 small">🔐 Portal de firmas</h6>
                     <p class="small text-muted mb-2">Código de acceso para que el empleado firme sus documentos pendientes desde su celular, sin necesidad de una cuenta del sistema.</p>
+                    <div class="input-group input-group-sm mb-3">
+                        <input type="text" class="form-control" id="portalFirmasUrl" value="{{ route('employee-portal.login') }}" readonly>
+                        <div class="input-group-append">
+                            <button type="button" class="btn btn-outline-secondary" onclick="navigator.clipboard.writeText(document.getElementById('portalFirmasUrl').value).then(()=>Swal.fire({icon:'success',title:'Enlace copiado',timer:1200,showConfirmButton:false}))">
+                                <i class="fa fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
                     <form method="POST" action="{{ route('empleados.portal.regenerate', $empleado->id) }}" onsubmit="return confirm('¿Generar un nuevo código de firma para este empleado? El código anterior dejará de funcionar de inmediato.');">
                         @csrf
                         <button class="btn btn-outline-primary btn-sm btn-block">
