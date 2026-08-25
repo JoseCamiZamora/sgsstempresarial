@@ -9,7 +9,8 @@
 </div>
 @if(session('success'))<div class="alert alert-success">{{session('success')}}</div>@endif
 
-@php($categories = ['attendance' => 'Asistencias', 'entrega_epp' => 'Dotación y EPP', 'documento' => 'Documentos'])
+@php($categories = ['attendance' => 'Asistencias', 'entrega_epp' => 'Dotación y EPP', 'documento' => 'Documentos', 'evaluacion' => 'Evaluaciones de capacitación'])
+@php($actionLabels = ['evaluacion' => 'Responder'])
 
 @foreach($categories as $key => $categoryLabel)
     <h2 class="h6 mt-4">{{$categoryLabel}}</h2>
@@ -19,7 +20,7 @@
             @if($item->subtitle)<small>{{$item->subtitle}}</small><br>@endif
             <small class="text-muted">{{$item->date->format('d/m/Y')}}</small>
             @if($item->badge)<span class="badge badge-warning ml-1">{{$item->badge}}</span>@endif
-            <div class="mt-2"><a href="{{route($item->signRouteName, $item->signRouteParams)}}" class="btn btn-success btn-sm">Firmar</a></div>
+            <div class="mt-2"><a href="{{route($item->signRouteName, $item->signRouteParams)}}" class="btn btn-success btn-sm">{{$actionLabels[$key] ?? 'Firmar'}}</a></div>
         </div>
     @empty
         <p class="text-muted small">No tiene pendientes en esta categoría.</p>

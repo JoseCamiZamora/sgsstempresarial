@@ -92,6 +92,7 @@ Route::middleware('throttle:30,1')->group(function () {
             Route::get('/firmar/{category}/{id}', [EmployeePortalController::class, 'showSign'])->where('category', 'attendance|entrega_epp|documento')->where('id', '[0-9]+')->name('sign.show');
             Route::post('/firmar/{category}/{id}', [EmployeePortalController::class, 'sign'])->where('category', 'attendance|entrega_epp|documento')->where('id', '[0-9]+')->middleware('throttle:30,1')->name('sign.store');
             Route::post('/firmar/{category}/{id}/guardada', [EmployeePortalController::class, 'applySavedSignature'])->where('category', 'attendance|entrega_epp|documento')->where('id', '[0-9]+')->middleware('throttle:30,1')->name('sign.apply-saved');
+            Route::get('/evaluacion/{access}', [EmployeePortalController::class, 'redirectToEvaluation'])->where('access', '[0-9]+')->middleware('throttle:30,1')->name('evaluation.redirect');
         });
     });
 });

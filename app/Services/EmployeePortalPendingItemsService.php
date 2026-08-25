@@ -1,6 +1,6 @@
 <?php
 namespace App\Services;
-use App\Models\{Documento, Empleado, EmpleadoPortalSignatureEvent};
+use App\Models\{Documento, Empleado, EmpleadoPortalSignatureEvent, TrainingEvaluationAccess, TrainingEvaluationAttempt};
 use App\Support\EmployeePortalPendingItem;
 use Illuminate\Support\Collection;
 
@@ -10,7 +10,50 @@ class EmployeePortalPendingItemsService
     {
         return $this->attendanceItems($empleado)
             ->concat($this->entregaEppItems($empleado))
-            ->concat($this->documentoItems($empleado));
+            ->concat($this->documentoItems($empleado))
+            ->concat($this->evaluacionItems($empleado));
+    }
+
+    private function evaluacionItems(Empleado $empleado): Collection
+    {
+        return TrainingEvaluationAccess::where('enabled', true)
+            ->whereHas('participant', fn ($q) => $q->where('employee_id', $empleado->id))
+            ->with(['evaluation.topic', 'participant'])
+            ->get()
+            ->filter(function ($access) {
+                $evaluation = $access->evaluation;
+                if (!$evaluation || !in_array($evaluation->status, ['published', 'open'], true)) {
+                    return false;
+                }
+                if ($evaluation->opens_at && now()->lt($evaluation->opens_at)) {
+                    return false;
+                }
+                if (($access->expires_at && now()->gte($access->expires_at)) || ($evaluation->closes_at && now()->gte($evaluation->closes_at))) {
+                    return false;
+                }
+
+                $attempts = TrainingEvaluationAttempt::where('training_evaluation_id', $evaluation->id)
+                    ->where('attendance_participant_id', $access->attendance_participant_id);
+
+                if ($attempts->clone()->where('result', 'passed')->exists()) {
+                    return false;
+                }
+                if ($evaluation->maximum_attempts !== null && $attempts->clone()->where('status', 'graded')->count() >= $evaluation->maximum_attempts) {
+                    return false;
+                }
+
+                return true;
+            })
+            ->map(fn ($access) => new EmployeePortalPendingItem(
+                category: 'evaluacion',
+                signableId: (string) $access->id,
+                label: 'Evaluación: ' . $access->evaluation->title,
+                subtitle: $access->evaluation->topic->name ?? '',
+                date: $access->evaluation->closes_at ?? $access->created_at,
+                signRouteName: 'employee-portal.evaluation.redirect',
+                signRouteParams: ['access' => $access->id],
+            ))
+            ->values();
     }
 
     private function documentoItems(Empleado $empleado): Collection

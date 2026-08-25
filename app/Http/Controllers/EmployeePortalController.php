@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\{EmployeePortalAcknowledgeRequest, EmployeePortalSignRequest};
-use App\Services\{EmployeePortalPendingItemsService, EmployeePortalSignatureService, SignatureCaptureService};
+use App\Models\TrainingEvaluationAccess;
+use App\Services\{EmployeePortalPendingItemsService, EmployeePortalSignatureService, SignatureCaptureService, TrainingEvaluationService};
 use Illuminate\Http\Request;
 
 class EmployeePortalController extends Controller
@@ -81,5 +82,16 @@ class EmployeePortalController extends Controller
         );
 
         return view('employee-portal.success', compact('event'));
+    }
+
+    public function redirectToEvaluation(Request $request, TrainingEvaluationAccess $access, TrainingEvaluationService $service)
+    {
+        $empleado = $request->attributes->get('portalEmpleado');
+        $access->loadMissing('participant', 'evaluation');
+        abort_unless($access->participant?->employee_id === $empleado->id, 403);
+
+        $token = $service->portalAccessToken($access);
+
+        return redirect()->route('training.evaluations.public.show', [$access->evaluation, $token]);
     }
 }
