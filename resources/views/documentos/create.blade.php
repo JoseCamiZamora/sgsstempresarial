@@ -58,6 +58,14 @@
                             <input type="text" name="version" class="form-control" value="{{ old('version', '1.0') }}" placeholder="1.0" required>
                         </div>
 
+                        <div class="form-group mb-4 p-3" style="background-color: #f8f9fc; border-radius: 8px;">
+                            <div style="display:flex;align-items:flex-start;gap:8px;">
+                                <input type="checkbox" name="requiere_firma_empleados" id="requiere_firma_empleados" value="1" style="width:20px;height:20px;flex:0 0 auto;margin-top:2px;" {{ old('requiere_firma_empleados') ? 'checked' : '' }}>
+                                <label for="requiere_firma_empleados" class="font-weight-bold mb-0">Requiere firma de los empleados</label>
+                            </div>
+                            <small class="text-muted d-block mt-1">Si se activa, este documento aparecerá como pendiente de firma en el Portal de Firmas para todos los empleados. Si más adelante sube una nueva versión, quienes ya firmaron deberán volver a firmar.</small>
+                        </div>
+
                         <div class="row mb-4">
                             <div class="col-md-6">
                                 <div class="form-group">

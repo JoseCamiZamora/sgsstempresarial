@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Models\{AttendanceEvent, Empleado, User};
+use App\Models\{AttendanceEvent, Empleado, EntregaEpp, Epp, User};
 use App\Services\EmployeePortalAccessService;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Str;
@@ -83,6 +83,60 @@ class EmployeePortalHttpFlowTest extends TestCase
     public function test_dashboard_redirects_to_login_without_a_session(): void
     {
         $this->get(route('employee-portal.dashboard'))->assertRedirect(route('employee-portal.login'));
+    }
+
+    public function test_full_http_flow_sign_a_pending_epp_delivery(): void
+    {
+        $employee = Empleado::first();
+        if (!$employee) {
+            $this->markTestSkipped('Sin empleados en la base de datos.');
+        }
+        $epp = Epp::first();
+        if (!$epp) {
+            $this->markTestSkipped('Sin catálogo de EPP en la base de datos.');
+        }
+        $admin = User::whereNotNull('company_id')->first();
+
+        $entrega = EntregaEpp::create([
+            'empleado_id' => $employee->id,
+            'epp_id' => $epp->id,
+            'fecha_entrega' => now()->toDateString(),
+            'motivo' => 'Dotación inicial (test HTTP)',
+            'cantidad' => 1,
+            'talla_entregada' => 'M',
+        ]);
+
+        $code = app(EmployeePortalAccessService::class)->regenerate($employee, $admin->id);
+
+        $this->post(route('employee-portal.login.submit'), [
+            'cedula' => $employee->cedula,
+            'codigo' => $code,
+        ])->assertRedirect(route('employee-portal.dashboard'));
+
+        $this->get(route('employee-portal.dashboard'))
+            ->assertOk()
+            ->assertSee('Dotación: ' . $epp->nombre);
+
+        $this->get(route('employee-portal.sign.show', ['category' => 'entrega_epp', 'id' => $entrega->id]))
+            ->assertOk();
+
+        $this->post(route('employee-portal.sign.store', ['category' => 'entrega_epp', 'id' => $entrega->id]), [
+            'signature' => 'data:image/png;base64,' . self::PNG_1PX,
+            'acknowledged' => '1',
+        ])->assertOk();
+
+        $this->assertSame('signed', $entrega->fresh()->signature_status);
+
+        $this->get(route('employee-portal.dashboard'))
+            ->assertOk()
+            ->assertDontSee('Dotación: ' . $epp->nombre);
+
+        // El PDF del acta debe renderizar sin error, embebiendo la firma.
+        $admin->assignRole('Super Admin');
+        $this->actingAs($admin)
+            ->get(route('entrega-epp.pdf', $entrega->id))
+            ->assertOk()
+            ->assertHeader('content-type', 'application/pdf');
     }
 
     public function test_saving_a_reference_signature_lets_the_employee_reuse_it_on_a_second_pending_item(): void

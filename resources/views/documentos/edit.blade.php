@@ -107,6 +107,14 @@
                     <textarea name="observaciones" class="form-control" rows="2" placeholder="Describa los cambios realizados...">{{ old('observaciones') }}</textarea>
                 </div>
 
+                <div class="form-group mb-3 p-3" style="background-color: #f8f9fc; border-radius: 8px;">
+                    <div style="display:flex;align-items:flex-start;gap:8px;">
+                        <input type="checkbox" name="requiere_firma_empleados" id="requiere_firma_empleados" value="1" style="width:20px;height:20px;flex:0 0 auto;margin-top:2px;" {{ old('requiere_firma_empleados', $documento->requiere_firma_empleados) ? 'checked' : '' }}>
+                        <label for="requiere_firma_empleados" class="font-weight-bold mb-0">Requiere firma de los empleados</label>
+                    </div>
+                    <small class="text-muted d-block mt-1">Si cambia la versión con esta opción activa, quienes ya habían firmado la versión anterior volverán a aparecer como pendientes.</small>
+                </div>
+
                 <hr>
 
                 <button type="submit" class="btn btn-primary btn-block btn-lg shadow-sm font-weight-bold">

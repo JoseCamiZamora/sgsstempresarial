@@ -69,8 +69,14 @@
 
     <div class="firmas">
         <div class="firma-box">
+            @if($signature ?? null)
+                <img src="{{ $signature }}" style="max-height:60px;max-width:100%;">
+            @endif
             Firma del Trabajador<br>
             C.C. {{ $entrega->empleado->cedula }}
+            @if($signature ?? null)
+                <br><small>Firmado digitalmente desde el portal de firmas</small>
+            @endif
         </div>
         <div class="firma-box">
             Responsable SG-SST / Empresa<br>

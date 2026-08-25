@@ -223,6 +223,7 @@
                                         <th>Elemento</th>
                                         <th>Talla</th>
                                         <th>Motivo</th>
+                                        <th class="text-center">Firma</th>
                                         <th class="text-center">Acta Entrega</th>
                                     </tr>
                                 </thead>
@@ -234,16 +235,23 @@
                                         <td><span class="badge badge-primary">{{ $entrega->talla_entregada }}</span></td>
                                         <td><small>{{ $entrega->motivo }}</small></td>
                                         <td class="text-center">
-                                            <a href="{{ route('entrega-epp.pdf', $entrega->id) }}" 
-                                            target="_blank" 
-                                            class="btn btn-sm btn-outline-danger border-0" 
+                                            @if($entrega->signature_status === 'signed')
+                                                <span class="badge badge-success"><i class="fa fa-check mr-1"></i>Firmado</span>
+                                            @else
+                                                <span class="badge badge-warning text-dark"><i class="fa fa-clock mr-1"></i>Pendiente</span>
+                                            @endif
+                                        </td>
+                                        <td class="text-center">
+                                            <a href="{{ route('entrega-epp.pdf', $entrega->id) }}"
+                                            target="_blank"
+                                            class="btn btn-sm btn-outline-danger border-0"
                                             title="Descargar Acta">
                                                 <i class="fa fa-file-pdf"></i>
                                             </a>
                                         </td>
                                     </tr>
                                     @empty
-                                    <tr><td colspan="4" class="text-center py-4 text-muted">No hay registros de entrega.</td></tr>
+                                    <tr><td colspan="5" class="text-center py-4 text-muted">No hay registros de entrega.</td></tr>
                                     @endforelse
                                 </tbody>
                             </table>

@@ -21,7 +21,12 @@ class Documento extends Model
         'fecha_vigencia_inicio',
         'fecha_vigencia_fin',
         'version',
-        'tipo_accion'
+        'tipo_accion',
+        'requiere_firma_empleados',
+    ];
+
+    protected $casts = [
+        'requiere_firma_empleados' => 'boolean',
     ];
 
     // Relación para saber qué administrador subió el documento
@@ -33,5 +38,15 @@ class Documento extends Model
     public function cambios()
     {
         return $this->hasMany(DocumentoCambio::class);
+    }
+
+    public function firmaRequerimientos()
+    {
+        return $this->hasMany(DocumentoFirmaRequerimiento::class);
+    }
+
+    public function ultimoRequerimientoFirma(): ?DocumentoFirmaRequerimiento
+    {
+        return $this->firmaRequerimientos()->latest('id')->first();
     }
 }

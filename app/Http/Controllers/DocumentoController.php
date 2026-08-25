@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Documento;
 use App\Models\DocumentoCambio;
+use App\Models\DocumentoFirmaRequerimiento;
 use Illuminate\Support\Facades\Storage;
 
 class DocumentoController extends Controller
@@ -38,10 +39,12 @@ class DocumentoController extends Controller
             'fecha_vigencia_fin' => 'nullable|date|after:fecha_vigencia_inicio',
             'tipo_accion' => 'required|in:Nuevo,Modificacion',
             'version' => 'required|string|max:20',
+            'requiere_firma_empleados' => 'nullable|boolean',
         ]);
 
         $datos = $request->only(['titulo', 'descripcion', 'categoria', 'fecha_vigencia_inicio', 'fecha_vigencia_fin', 'tipo_accion', 'version']);
         $datos['subido_por'] = auth()->id();
+        $datos['requiere_firma_empleados'] = $request->boolean('requiere_firma_empleados');
 
         $prefijoCategoria = [
             'Políticas y Objetivos' => 'P',
@@ -75,6 +78,13 @@ class DocumentoController extends Controller
             'observaciones' => 'Documento ' . ($request->tipo_accion === 'Nuevo' ? 'creado' : 'modificado') . ' inicialmente',
             'registrado_por' => auth()->id(),
         ]);
+
+        if ($documento->requiere_firma_empleados) {
+            DocumentoFirmaRequerimiento::firstOrCreate([
+                'documento_id' => $documento->id,
+                'version_requerida' => $request->version,
+            ]);
+        }
 
         return redirect()->route('documentos.index')
             ->with('success', 'Documento subido exitosamente. Código: ' . $datos['codigo']);
@@ -114,9 +124,11 @@ class DocumentoController extends Controller
             'fecha_vigencia_fin' => 'nullable|date|after:fecha_vigencia_inicio',
             'tipo_accion' => 'required|in:Nuevo,Modificacion',
             'version' => 'required|string|max:20',
+            'requiere_firma_empleados' => 'nullable|boolean',
         ]);
 
         $datos = $request->only(['titulo', 'descripcion', 'categoria', 'fecha_vigencia_inicio', 'fecha_vigencia_fin', 'tipo_accion', 'version']);
+        $datos['requiere_firma_empleados'] = $request->boolean('requiere_firma_empleados');
 
         if ($request->hasFile('archivo')) {
             if (Storage::disk('public')->exists($documento->archivo_ruta)) {
@@ -141,6 +153,13 @@ class DocumentoController extends Controller
             'observaciones' => $request->observaciones ?? 'Documento actualizado',
             'registrado_por' => auth()->id(),
         ]);
+
+        if ($documento->requiere_firma_empleados) {
+            DocumentoFirmaRequerimiento::firstOrCreate([
+                'documento_id' => $documento->id,
+                'version_requerida' => $request->version,
+            ]);
+        }
 
         return redirect()->route('documentos.index')
             ->with('success', 'Documento actualizado. Versión: ' . $request->version);

@@ -10,13 +10,14 @@ class EntregaEpp extends Model
     use HasFactory;
     protected $table = 'entrega_epps';
     protected $fillable = [
-        'empleado_id', 
-        'epp_id', 
-        'fecha_entrega', 
-        'motivo', 
-        'cantidad', 
-        'talla_entregada', 
-        'observaciones'
+        'empleado_id',
+        'epp_id',
+        'fecha_entrega',
+        'motivo',
+        'cantidad',
+        'talla_entregada',
+        'observaciones',
+        'signature_status',
     ];
 
     /**
