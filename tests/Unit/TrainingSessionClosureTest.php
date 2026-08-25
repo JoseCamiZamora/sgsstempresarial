@@ -1,0 +1,3 @@
+<?php
+namespace Tests\Unit; use App\Services\{TrainingProgressService,TrainingSessionClosureService,TrainingSessionService}; use PHPUnit\Framework\TestCase;
+class TrainingSessionClosureTest extends TestCase { public function test_coverage_is_ninety_percent_for_36_of_40():void{$service=new TrainingSessionClosureService($this->createMock(TrainingProgressService::class),$this->createMock(TrainingSessionService::class));$this->assertSame(90.0,$service->coverageFromCounts(40,36));} public function test_coverage_avoids_division_by_zero():void{$service=new TrainingSessionClosureService($this->createMock(TrainingProgressService::class),$this->createMock(TrainingSessionService::class));$this->assertSame(0.0,$service->coverageFromCounts(0,0));} }

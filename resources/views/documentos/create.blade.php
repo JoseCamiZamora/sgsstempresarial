@@ -45,9 +45,32 @@
                             </select>
                         </div>
 
-                        <div class="form-group mb-4">
-                            <label class="font-weight-bold text-muted small">Descripción (Opcional)</label>
-                            <textarea name="descripcion" class="form-control" rows="2" placeholder="Breve resumen de qué trata el documento...">{{ old('descripcion') }}</textarea>
+                        <div class="form-group mb-3">
+                            <label class="font-weight-bold text-muted small">Tipo de Acción</label>
+                            <select name="tipo_accion" class="form-control" required>
+                                <option value="Nuevo" selected>Nuevo Documento</option>
+                                <option value="Modificacion">Modificación a Documento Existente</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label class="font-weight-bold text-muted small">Versión</label>
+                            <input type="text" name="version" class="form-control" value="{{ old('version', '1.0') }}" placeholder="1.0" required>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="font-weight-bold text-muted small">Fecha Inicio Vigencia (Opcional)</label>
+                                    <input type="date" name="fecha_vigencia_inicio" class="form-control" value="{{ old('fecha_vigencia_inicio') }}">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="font-weight-bold text-muted small">Fecha Fin Vigencia (Opcional)</label>
+                                    <input type="date" name="fecha_vigencia_fin" class="form-control" value="{{ old('fecha_vigencia_fin') }}">
+                                </div>
+                            </div>
                         </div>
 
                         <div class="form-group mb-4 p-4 text-center" style="border: 2px dashed #bac8d3; background-color: #f8f9fc; border-radius: 10px;">

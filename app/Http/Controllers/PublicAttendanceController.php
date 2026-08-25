@@ -1,0 +1,8 @@
+<?php
+namespace App\Http\Controllers;use App\Http\Requests\{ConfirmAttendanceRequest,VerifyAttendanceParticipantRequest};use App\Models\{AttendanceEvent,AttendanceParticipant,AttendanceRecord};use App\Services\{AttendanceAccessService,AttendanceRegistrationService};use Illuminate\Http\Request;
+class PublicAttendanceController extends Controller{
+ public function show(AttendanceEvent $event,string $token,AttendanceAccessService $access){$access->validateToken($event,$token);$event->load('company');return view('attendance.public.identify',compact('event','token'));}
+ public function verify(AttendanceEvent $event,string $token,VerifyAttendanceParticipantRequest $request,AttendanceAccessService $access){$access->validateToken($event,$token);$participant=$access->identify($event,$request->validated('personal_code'));$request->session()->put("attendance_identity.{$event->uuid}",$participant->uuid);return view('attendance.public.sign',compact('event','token','participant'));}
+ public function confirm(AttendanceEvent $event,string $token,ConfirmAttendanceRequest $request,AttendanceAccessService $access,AttendanceRegistrationService $registration){$access->validateToken($event,$token);$uuid=$request->session()->pull("attendance_identity.{$event->uuid}");abort_unless($uuid,403);$participant=$event->participants()->where('uuid',$uuid)->firstOrFail();$record=$registration->confirm($event,$participant,$request->validated('signature'),$request->boolean('acknowledged'));return view('attendance.public.success',compact('event','record'));}
+ public function verifyEvidence(string $code){$record=AttendanceRecord::with('event.company')->where('verification_code',$code)->firstOrFail();return view('attendance.public.verify',compact('record'));}
+}

@@ -35,9 +35,11 @@
                 <table class="table table-hover table-bordered mb-0 text-sm align-middle">
                     <thead style="background-color: #f8f9fc; color: #4e73df;">
                         <tr>
+                            <th class="text-center" style="width: 80px;">Código</th>
                             <th class="text-center" style="width: 60px;">Tipo</th>
                             <th>Título del Documento</th>
                             <th>Categoría</th>
+                            <th class="text-center">Versión</th>
                             <th>Subido Por</th>
                             <th class="text-center">Fecha</th>
                             <th class="text-center" style="width: 150px;">Acciones</th>
@@ -46,6 +48,9 @@
                     <tbody>
                         @forelse($documentos as $doc)
                         <tr>
+                            <td class="text-center">
+                                <span class="badge badge-primary px-2 py-1">{{ $doc->codigo ?? 'SIN-CODIGO' }}</span>
+                            </td>
                             <td class="text-center">
                                 @if(in_array(strtolower($doc->extension_archivo), ['pdf']))
                                     <i class="fa fa-file-pdf-o fa-2x text-danger" title="PDF"></i>
@@ -67,6 +72,9 @@
                                 <span class="badge badge-light border px-2 py-1 text-secondary">
                                     {{ $doc->categoria }}
                                 </span>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge badge-info">{{ $doc->version ?? '1.0' }}</span>
                             </td>
                             <td class="small">{{ $doc->autor->name ?? 'Usuario Eliminado' }}</td>
                             <td class="text-center small text-muted">
@@ -90,7 +98,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="6" class="text-center py-5 text-muted">
+                            <td colspan="8" class="text-center py-5 text-muted">
                                 <i class="fa fa-folder-open-o fa-3x mb-3 d-block text-gray-300"></i>
                                 La biblioteca de documentos está vacía.<br>
                                 @hasanyrole('Super Admin|Administrador SGSST')

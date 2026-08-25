@@ -1,0 +1,2 @@
+<?php
+namespace App\Http\Requests;use Illuminate\Foundation\Http\FormRequest;class ConfirmAttendanceRequest extends FormRequest{public function authorize(){return true;}public function rules(){return['signature'=>'required|string|max:700000','acknowledged'=>'accepted'];}public function messages(){return['signature.required'=>'Debe registrar su firma dentro del recuadro.','acknowledged.accepted'=>'Debe confirmar el aviso de asistencia y tratamiento de datos.'];}}

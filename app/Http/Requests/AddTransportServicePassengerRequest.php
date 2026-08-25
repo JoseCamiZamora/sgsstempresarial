@@ -1,0 +1,2 @@
+<?php
+namespace App\Http\Requests;use Illuminate\Foundation\Http\FormRequest;use Illuminate\Validation\Rule;class AddTransportServicePassengerRequest extends FormRequest{public function authorize():bool{return$this->user()?->can('transporte.pasajeros_servicio.gestionar')??false;}public function rules():array{return['transport_passenger_id'=>['required',Rule::exists('transport_passengers','id')->where(fn($q)=>$q->where('company_id',$this->user()->company_id)->where('status','active'))],'reason'=>'required|string|min:10|max:1000'];}}

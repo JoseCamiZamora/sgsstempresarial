@@ -1,0 +1,3 @@
+<?php
+namespace App\Models;use Illuminate\Database\Eloquent\{Builder,Model};
+class TransportDocumentType extends Model {protected$fillable=['company_id','name','applies_to','is_required','requires_number','requires_issue_date','requires_expiration_date','requires_file','warning_days','block_operation_when_expired','is_active'];protected$casts=['is_required'=>'boolean','requires_number'=>'boolean','requires_issue_date'=>'boolean','requires_expiration_date'=>'boolean','requires_file'=>'boolean','block_operation_when_expired'=>'boolean','is_active'=>'boolean'];public function scopeForCompany(Builder$q,int$id):Builder{return$q->where('company_id',$id);}public function documents(){return$this->hasMany(TransportDocument::class);} }

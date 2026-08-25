@@ -1,0 +1,3 @@
+<?php
+namespace App\Models; use Illuminate\Database\Eloquent\Model;
+class EmployeeTrainingCredential extends Model{protected $fillable=['company_id','employee_id','training_topic_id','training_session_id','evaluation_attempt_id','credential_type','name','issuing_organization','certificate_number','issued_at','expires_at','document_path','verification_url','verification_code','status','created_by'];protected $casts=['issued_at'=>'date','expires_at'=>'date'];public function employee(){return$this->belongsTo(Empleado::class);}public function topic(){return$this->belongsTo(TrainingTopic::class,'training_topic_id');}}

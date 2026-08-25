@@ -1,0 +1,2 @@
+<?php
+namespace App\Console\Commands;use App\Services\CommitteeAlertService;use Illuminate\Console\Command;class CheckCommitteeOperations extends Command{protected $signature='sgsst:check-committee-operations';protected $description='Genera alertas idempotentes del funcionamiento de comités';public function handle(CommitteeAlertService $service):int{$count=$service->check();$this->info("Alertas nuevas: {$count}");return self::SUCCESS;}}

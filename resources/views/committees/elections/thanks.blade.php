@@ -1,0 +1,1 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="robots" content="noindex,nofollow"></head><body><main style="max-width:600px;margin:80px auto;text-align:center;font-family:sans-serif"><h1>Voto registrado</h1><p>Su participación fue registrada correctamente. Gracias por participar.</p></main></body></html>

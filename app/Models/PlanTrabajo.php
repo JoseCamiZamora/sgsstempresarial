@@ -2,26 +2,16 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class PlanTrabajo extends Model
 {
-    use HasFactory;
+    protected $table = 'planes_trabajo';
+    protected $fillable = ['anio', 'objetivo_general', 'presupuesto_asignado', 'estado'];
 
-    // Los campos que permitimos llenar desde el formulario
-    protected $fillable = [
-        'actividad',
-        'fecha_programada',
-        'responsable_id',
-        'estado',
-        'evidencia_pdf',
-        'observaciones'
-    ];
-
-    // Relación: Una actividad pertenece a un usuario (responsable)
-    public function responsable()
+    // Un plan tiene muchas actividades
+    public function actividades()
     {
-        return $this->belongsTo(User::class, 'responsable_id');
+        return $this->hasMany(ActividadPlan::class);
     }
 }

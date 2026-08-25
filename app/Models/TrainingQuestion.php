@@ -1,0 +1,3 @@
+<?php
+namespace App\Models; use Illuminate\Database\Eloquent\Model;
+class TrainingQuestion extends Model{protected $fillable=['company_id','training_topic_id','question_text','question_type','explanation','default_points','difficulty','is_critical','is_active','created_by','updated_by'];protected $casts=['default_points'=>'decimal:2','is_critical'=>'boolean','is_active'=>'boolean'];public function topic(){return$this->belongsTo(TrainingTopic::class,'training_topic_id');}public function options(){return$this->hasMany(TrainingQuestionOption::class)->orderBy('sort_order');}public function scopeForCompany($q,int$id){return$q->where('company_id',$id);}}

@@ -1,0 +1,3 @@
+<?php
+namespace Tests\Feature;use Illuminate\Support\Facades\{Schema,Route};use Tests\TestCase;
+class TransportOperationArchitectureTest extends TestCase { public function test_transport_operation_schema_and_routes_exist():void{foreach(['actual_vehicle_id','actual_driver_id','actual_start_at','actual_arrival_at','closed_at']as$c)$this->assertTrue(Schema::hasColumn('transport_services',$c));foreach(['transport_checklist_templates','transport_preoperational_checks','transport_service_issues','transport_arrival_signatures']as$t)$this->assertTrue(Schema::hasTable($t));foreach(['transport.operation.departure','transport.operation.arrival','transport.operation.close','transport.operation.signature']as$r)$this->assertTrue(Route::has($r));} }

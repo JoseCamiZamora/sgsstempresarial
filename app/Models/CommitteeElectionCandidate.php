@@ -1,0 +1,3 @@
+<?php
+namespace App\Models;use Illuminate\Database\Eloquent\Model;
+class CommitteeElectionCandidate extends Model {public $timestamps=false;protected $fillable=['election_id','committee_candidate_id','name','position','department','photo_path','short_profile','proposal','enabled'];protected $casts=['enabled'=>'boolean'];public function election(){return $this->belongsTo(CommitteeElection::class);}public function sourceCandidate(){return $this->belongsTo(CommitteeCandidate::class,'committee_candidate_id');}public function selections(){return $this->hasMany(CommitteeBallotSelection::class,'election_candidate_id');}}

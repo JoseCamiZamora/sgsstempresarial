@@ -18,7 +18,8 @@ class MatrizRiesgoController extends Controller
     {
         // Traemos todos los riesgos ordenados del más reciente al más antiguo
         // y usamos 'with' para traer también los datos del usuario responsable
-        $riesgos = MatrizRiesgo::with('responsable')->orderBy('id', 'desc')->get();
+        $riesgos = MatrizRiesgo::forCompany(auth()->user()->company_id)
+            ->with('responsable')->orderBy('id', 'desc')->get();
         
         return view('matriz_riesgos.index', compact('riesgos'));
     }
@@ -54,10 +55,15 @@ class MatrizRiesgoController extends Controller
         ]);
 
         // 2. Tomamos todos los datos del formulario
-        $datosRiesgo = $request->all();
+        $datosRiesgo = $request->only([
+            'proceso', 'zona_lugar', 'actividad', 'es_rutinaria',
+            'clasificacion_peligro', 'descripcion_peligro',
+            'efectos_posibles', 'nivel_riesgo',
+        ]);
         
         // 3. Le inyectamos el ID del usuario que está logueado en este momento (Auditoría)
         $datosRiesgo['registrado_por'] = auth()->id();
+        $datosRiesgo['company_id'] = auth()->user()->company_id;
 
         // 4. Guardamos en la base de datos
         MatrizRiesgo::create($datosRiesgo);
@@ -81,7 +87,7 @@ class MatrizRiesgoController extends Controller
     public function edit(string $id)
     {
         // Buscamos el riesgo específico en la base de datos
-        $riesgo = MatrizRiesgo::findOrFail($id);
+        $riesgo = MatrizRiesgo::forCompany(auth()->user()->company_id)->findOrFail($id);
         
         return view('matriz_riesgos.edit', compact('riesgo'));
     }
@@ -91,7 +97,7 @@ class MatrizRiesgoController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $riesgo = MatrizRiesgo::findOrFail($id);
+        $riesgo = MatrizRiesgo::forCompany(auth()->user()->company_id)->findOrFail($id);
 
         // 1. Validamos los mismos campos que en la creación
         $request->validate([
@@ -121,7 +127,7 @@ class MatrizRiesgoController extends Controller
      */
     public function destroy(string $id)
     {
-        $riesgo = MatrizRiesgo::findOrFail($id);
+        $riesgo = MatrizRiesgo::forCompany(auth()->user()->company_id)->findOrFail($id);
         $riesgo->delete();
 
         return redirect()->route('matriz-riesgos.index')
@@ -136,7 +142,7 @@ class MatrizRiesgoController extends Controller
     public function exportPdf()
     {
         // 1. Traemos los datos
-        $riesgos = MatrizRiesgo::with('responsable')->get();
+        $riesgos = MatrizRiesgo::forCompany(auth()->user()->company_id)->with('responsable')->get();
         
         // 2. Cargamos la vista que acabamos de crear y le pasamos los datos
         $pdf = Pdf::loadView('matriz_riesgos.pdf', compact('riesgos'));

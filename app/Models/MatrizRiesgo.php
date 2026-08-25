@@ -14,6 +14,7 @@ class MatrizRiesgo extends Model
 
     // 2. Definimos los campos que se pueden llenar desde el formulario
     protected $fillable = [
+        'company_id',
         'proceso',
         'zona_lugar',
         'actividad',
@@ -29,5 +30,10 @@ class MatrizRiesgo extends Model
     public function responsable()
     {
         return $this->belongsTo(User::class, 'registrado_por');
+    }
+
+    public function scopeForCompany($query, int $companyId)
+    {
+        return $query->where('company_id', $companyId);
     }
 }

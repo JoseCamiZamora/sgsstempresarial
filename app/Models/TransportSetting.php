@@ -1,0 +1,4 @@
+<?php
+namespace App\Models;
+use Illuminate\Database\Eloquent\Model;
+class TransportSetting extends Model { protected $fillable=['company_id','service_name','site_name','workday_starts_at','workday_ends_at','arrival_tolerance_minutes','departure_tolerance_minutes','turnaround_minutes','upcoming_service_hours','requires_arrival_signature','requires_departure_odometer','requires_arrival_odometer','active_weekdays','responsible_employee_id','created_by','updated_by']; protected $casts=['active_weekdays'=>'array','requires_arrival_signature'=>'boolean','requires_departure_odometer'=>'boolean','requires_arrival_odometer'=>'boolean']; public function responsible(){return $this->belongsTo(Empleado::class,'responsible_employee_id');} }

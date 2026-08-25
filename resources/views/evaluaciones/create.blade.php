@@ -38,7 +38,7 @@
                         <tr>
                             <th>Estándar Mínimo</th>
                             <th width="120" class="text-center">Peso (%)</th>
-                            <th width="100" class="text-center">Cumple</th>
+                            <th width="150" class="text-center">Estado</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -51,10 +51,12 @@
                             <td class="text-center align-middle font-weight-bold">
                                 {{ $item->porcentaje }}%
                             </td>
-                            <td class="text-center align-middle">
-                                <input type="checkbox" name="items[{{ $item->id }}]" value="{{ $item->porcentaje }}" 
-                                       class="check-item" style="transform: scale(1.5); cursor: pointer;">
-                                       
+<td class="text-center align-middle">
+                                <select name="items[{{ $item->id }}]" class="form-select select-item" data-peso="{{ $item->porcentaje }}" style="cursor: pointer;">
+                                    <option value="No Aplica" data-peso="0">No Aplica</option>
+                                    <option value="No Cumple" data-peso="0">No Cumple</option>
+                                    <option value="Cumple" data-peso="{{ $item->porcentaje }}" selected>Cumple</option>
+                                </select>
                             </td>
                         </tr>
                         @endforeach
@@ -100,36 +102,30 @@
     document.addEventListener('DOMContentLoaded', function() {
         console.log("Script de evaluación iniciado");
 
-        // 1. Definimos las variables capturando los elementos del DOM
         const display = document.getElementById('totalDisplay');
         const estadoTexto = document.getElementById('estadoTexto');
-        // Capturamos todos los checks cada vez que se necesite o al inicio
-        const obtenerChecks = () => document.querySelectorAll('.check-item');
+        const obtenerSelects = () => document.querySelectorAll('.select-item');
 
         function calcularTodo() {
             let sumaMarcados = 0;
             let sumaTotalPosible = 0;
-            const checks = obtenerChecks();
+            const selects = obtenerSelects();
 
-            // 2. Sumamos lo que vale CADA checkbox que aparece en la pantalla
-            checks.forEach(check => {
-                const valor = parseFloat(check.value) || 0;
-                sumaTotalPosible += valor; 
-                
-                if (check.checked) {
-                    sumaMarcados += valor;
+            selects.forEach(select => {
+                const pesoTotal = parseFloat(select.dataset.peso) || 0;
+                sumaTotalPosible += pesoTotal;
+
+                if (select.value === 'Cumple' || select.value === 'No Aplica') {
+                    sumaMarcados += pesoTotal;
                 }
             });
 
-            // 3. Aplicamos la regla de tres proporcional
             let resultadoFinal = (sumaTotalPosible > 0) ? (sumaMarcados / sumaTotalPosible) * 100 : 0;
 
-            // 4. Mostramos el resultado en el ID totalDisplay
             if (display) {
                 display.innerText = resultadoFinal.toFixed(1) + '%';
             }
 
-            // 5. Semáforo de estados
             if (estadoTexto) {
                 if (resultadoFinal < 60) {
                     estadoTexto.innerText = "ESTADO: CRÍTICO";
@@ -144,14 +140,12 @@
             }
         }
 
-        // 6. Escuchamos los cambios en el documento (Delegación de eventos)
         document.addEventListener('change', function(e) {
-            if (e.target && e.target.classList.contains('check-item')) {
+            if (e.target && e.target.classList.contains('select-item')) {
                 calcularTodo();
             }
         });
 
-        // 7. Ejecución inicial para asegurar que empiece en 0.0% correctamente
         calcularTodo();
     });
 </script>

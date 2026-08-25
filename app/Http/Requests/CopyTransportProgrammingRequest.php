@@ -1,0 +1,2 @@
+<?php
+namespace App\Http\Requests;use Illuminate\Foundation\Http\FormRequest;class CopyTransportProgrammingRequest extends FormRequest{public function authorize():bool{return$this->user()?->can('transporte.programacion.crear')??false;}public function rules():array{return['source_from'=>'required|date','source_to'=>'required|date|after_or_equal:source_from','target_from'=>'required|date','reason'=>'required|string|min:10|max:1000'];}}

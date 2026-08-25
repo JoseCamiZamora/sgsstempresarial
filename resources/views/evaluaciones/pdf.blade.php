@@ -89,9 +89,15 @@
                 <td style="text-align: center;">{{ $index + 1 }}</td>
                 <td>{{ $item->nombre }}</td>
                 <td style="text-align: center;">{{ $item->porcentaje }}%</td>
-                <td style="text-align: center; font-weight: bold; color: {{ in_array($item->id, $respuestasIds) ? '#28a745' : '#dc3545' }};">
-                    {{ in_array($item->id, $respuestasIds) ? 'CUMPLE' : 'NO CUMPLE' }}
-                </td>
+@php $respuestaItem = $evaluacion->respuestas->firstWhere('item_estandar_id', $item->id); 
+                                $esPositivo = $respuestaItem && ($respuestaItem->calificacion == 'Cumple' || $respuestaItem->calificacion == 'No Aplica'); @endphp
+                                <td style="text-align: center; font-weight: bold; color: {{ $esPositivo ? '#28a745' : '#dc3545' }};">
+                                    @if($respuestaItem)
+                                        {{ strtoupper($respuestaItem->calificacion) }}
+                                    @else
+                                        NO CUMPLE
+                                    @endif
+                                </td>
             </tr>
             @endforeach
         </tbody>

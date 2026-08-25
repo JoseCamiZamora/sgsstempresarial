@@ -1,0 +1,3 @@
+<?php
+namespace App\Models; use Illuminate\Database\Eloquent\Model;
+class TrainingInstructor extends Model { protected $fillable=['company_id','name','document_type','document_number','organization','profession','email','phone','license_number','license_expiration_date','notes','is_active']; protected $casts=['license_expiration_date'=>'date','is_active'=>'boolean']; public function company(){return $this->belongsTo(PerfilEmpresa::class,'company_id');} public function sessions(){return $this->hasMany(TrainingSession::class,'external_instructor_id');} public function scopeForCompany($q,int $id){return $q->where('company_id',$id);} }

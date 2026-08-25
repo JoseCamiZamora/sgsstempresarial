@@ -27,4 +27,14 @@ class PerfilEmpresa extends Model
     ];
 
     
+    public function committees()
+    {
+        return $this->hasMany(Committee::class, 'perfil_empresa_id');
+    }
+    public function trainingNeeds() { return $this->hasMany(TrainingNeed::class, 'company_id'); }
+    public function trainingPrograms() { return $this->hasMany(TrainingProgram::class, 'company_id'); }
+    public function transportVehicles() { return $this->hasMany(TransportVehicle::class, 'company_id'); }
+    public function transportRoutes() { return $this->hasMany(TransportRoute::class, 'company_id'); }
+    public function transportPersonnel() { return $this->hasMany(TransportPerson::class, 'company_id'); }
+    public function transportPassengers() { return $this->hasMany(TransportPassenger::class, 'company_id'); }
 }

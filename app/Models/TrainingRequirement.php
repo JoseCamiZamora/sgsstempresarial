@@ -1,0 +1,3 @@
+<?php
+namespace App\Models; use Illuminate\Database\Eloquent\Model;
+class TrainingRequirement extends Model{protected $fillable=['company_id','training_topic_id','requirement_type','requirement_reference','required','validity_months','requires_evaluation','requires_certificate','priority','regulation_reference','is_active','created_by','updated_by'];protected $casts=['required'=>'boolean','requires_evaluation'=>'boolean','requires_certificate'=>'boolean','is_active'=>'boolean'];public function topic(){return$this->belongsTo(TrainingTopic::class,'training_topic_id');}public function scopeForCompany($q,int$id){return$q->where('company_id',$id);}}

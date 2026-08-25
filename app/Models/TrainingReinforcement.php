@@ -1,0 +1,3 @@
+<?php
+namespace App\Models; use Illuminate\Database\Eloquent\Model;
+class TrainingReinforcement extends Model{protected $fillable=['company_id','employee_id','training_session_id','evaluation_attempt_id','reinforcement_session_id','reason','status','assigned_at','due_at','completed_at','waiver_reason','created_by','updated_by'];protected $casts=['assigned_at'=>'datetime','due_at'=>'datetime','completed_at'=>'datetime'];public function employee(){return$this->belongsTo(Empleado::class);}public function attempt(){return$this->belongsTo(TrainingEvaluationAttempt::class,'evaluation_attempt_id');}}

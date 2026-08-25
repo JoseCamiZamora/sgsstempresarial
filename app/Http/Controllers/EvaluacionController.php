@@ -31,9 +31,8 @@ class EvaluacionController extends Controller
         return view('evaluaciones.index', compact('evaluaciones', 'sumas','empresaPerfil'));
     }
 
-    public function store(Request $request)
+public function store(Request $request)
     {
-        // Validamos que vengan ítems marcados o al menos la estructura básica
         $request->validate([
             'empresa_id' => 'required',
             'tipo_plantilla' => 'required'
@@ -42,43 +41,51 @@ class EvaluacionController extends Controller
         DB::beginTransaction();
 
         try {
-            // 1. EL CEREBRO MATEMÁTICO: Calcular el 100% relativo de esta plantilla
-            // Sumamos cuánto valen TODOS los ítems que pertenecen a esta plantilla (7, 21 o 60)
-            $sumaTotalPosible = \App\Models\ItemEstandar::where('activo', true)
-                                ->where('tipo_plantilla', '<=', $request->tipo_plantilla)
-                                ->sum('porcentaje');
-
-            // 2. Sumamos lo que el usuario marcó realmente
-            $sumaMarcados = $request->has('items') ? array_sum($request->items) : 0;
-
-            // 3. Aplicamos Regla de Tres para obtener el puntaje real sobre 100
-            $puntajeFinal = ($sumaTotalPosible > 0) ? ($sumaMarcados / $sumaTotalPosible) * 100 : 0;
-            
-            $estado = $this->calcularNivelMadurez($puntajeFinal);
-
-            // 4. GUARDAR CABECERA (Tabla evaluaciones)
             $evaluacion = Evaluacion::create([
                 'perfil_empresa_id'       => $request->empresa_id,
                 'fecha_evaluacion'        => now(),
                 'tipo_plantilla_aplicada' => $request->tipo_plantilla,
-                'puntaje_final'           => $puntajeFinal,
-                'nivel_madurez'           => $estado,
+                'puntaje_final'           => 0,
+                'nivel_madurez'           => 'Crítico',
                 'evaluador'               => auth()->user()->name,
                 'user_id'                 => auth()->id(),
             ]);
 
-            // 5. GUARDAR DETALLES (Tabla evaluacion_respuestas)
+            $itemsAplicables = \App\Models\ItemEstandar::where('activo', true)
+                                ->where('tipo_plantilla', '<=', $request->tipo_plantilla)
+                                ->get();
+            
+            $sumaTotalPosible = $itemsAplicables->sum('porcentaje');
+            $sumaMarcados = 0;
+
             if ($request->has('items')) {
-                foreach ($request->items as $itemId => $valorPeso) {
+                foreach ($request->items as $itemId => $valorSeleccionado) {
+                    $puntajeObtenido = 0;
+                    $calificacion = is_string($valorSeleccionado) ? $valorSeleccionado : null;
+                    
+                    // Cumple y No Aplica otorgan el puntaje completo del ítem
+                    if ($calificacion === 'Cumple' || $calificacion === 'No Aplica') {
+                        $puntajeObtenido = \App\Models\ItemEstandar::where('id', $itemId)->value('porcentaje') ?: 0;
+                        $sumaMarcados += $puntajeObtenido;
+                    }
+                    
                     \App\Models\EvaluacionRespuesta::create([
                         'evaluacion_id'    => $evaluacion->id,
                         'item_estandar_id' => $itemId,
-                        'calificacion'     => 'Cumple',
-                        'puntaje_obtenido' => $valorPeso, // Guardamos el peso original del ítem
+                        'calificacion'     => $calificacion,
+                        'puntaje_obtenido' => $puntajeObtenido,
                         'observaciones'    => null
                     ]);
                 }
             }
+
+            $puntajeFinal = ($sumaTotalPosible > 0) ? ($sumaMarcados / $sumaTotalPosible) * 100 : 0;
+            $estado = $this->calcularNivelMadurez($puntajeFinal);
+
+            $evaluacion->update([
+                'puntaje_final' => $puntajeFinal,
+                'nivel_madurez' => $estado,
+            ]);
 
             DB::commit();
             return redirect()->route('evaluacion.index')
@@ -86,10 +93,10 @@ class EvaluacionController extends Controller
 
         } catch (\Exception $e) {
             DB::rollback();
-            dd($e->getMessage());
             return redirect()->back()->with('error', 'Error al guardar: ' . $e->getMessage());
         }
     }
+
     public function crearEvaluacion($empresaId)
     {
         // 1. Buscamos la empresa
@@ -132,17 +139,15 @@ class EvaluacionController extends Controller
         
         $tipoPlantilla = $evaluacion->tipo_plantilla_aplicada;
 
-        // 1. Traemos los estándares de la plantilla usada
         $estandares = ItemEstandar::where('activo', true)
                         ->where('tipo_plantilla', '<=', $tipoPlantilla)
                         ->get();
 
-        // 2. 👇 ESTA ES LA CLAVE: Obtenemos solo los IDs de los ítems ya marcados 👇
-        $respuestasIds = \App\Models\EvaluacionRespuesta::where('evaluacion_id', $id)
-                            ->pluck('item_estandar_id') // Solo traemos la columna del ID
-                            ->toArray(); // Lo convertimos en [1, 5, 8, ...]
+        $respuestasMap = \App\Models\EvaluacionRespuesta::where('evaluacion_id', $id)
+                        ->pluck('calificacion', 'item_estandar_id')
+                        ->toArray();
 
-        return view('evaluaciones.edit', compact('evaluacion', 'empresa', 'tipoPlantilla', 'estandares', 'respuestasIds'));
+        return view('evaluaciones.edit', compact('evaluacion', 'empresa', 'tipoPlantilla', 'estandares', 'respuestasMap'));
     }
 
     public function update(Request $request, $id)
@@ -152,35 +157,45 @@ class EvaluacionController extends Controller
         try {
             $evaluacion = Evaluacion::findOrFail($id);
 
-            // 1. RECALCULAR EL 100% RELATIVO (Igual que en store)
-            $sumaTotalPosible = \App\Models\ItemEstandar::where('activo', true)
+            $itemsAplicables = \App\Models\ItemEstandar::where('activo', true)
                                 ->where('tipo_plantilla', '<=', $request->tipo_plantilla)
-                                ->sum('porcentaje');
+                                ->get();
+            
+            $sumaTotalPosible = $itemsAplicables->sum('porcentaje');
+            $itemsIds = $itemsAplicables->pluck('id')->toArray();
 
-            $sumaMarcados = $request->has('items') ? array_sum($request->items) : 0;
+            $sumaMarcados = 0;
+            if ($request->has('items')) {
+                foreach ($request->items as $itemId => $valorSeleccionado) {
+                    if ($valorSeleccionado === 'Cumple' || $valorSeleccionado === 'No Aplica') {
+                        $sumaMarcados += \App\Models\ItemEstandar::where('id', $itemId)->value('porcentaje') ?: 0;
+                    }
+                }
+            }
 
             $puntajeFinal = ($sumaTotalPosible > 0) ? ($sumaMarcados / $sumaTotalPosible) * 100 : 0;
             $estado = $this->calcularNivelMadurez($puntajeFinal);
 
-            // 2. ACTUALIZAR CABECERA
             $evaluacion->update([
                 'puntaje_final' => $puntajeFinal,
                 'nivel_madurez' => $estado,
                 'evaluador'     => auth()->user()->name,
             ]);
 
-            // 3. LIMPIEZA DE RESPUESTAS ANTERIORES
-            // Borramos el detalle viejo para evitar duplicados o datos basura
             \App\Models\EvaluacionRespuesta::where('evaluacion_id', $id)->delete();
 
-            // 4. INSERTAR NUEVAS RESPUESTAS
             if ($request->has('items')) {
-                foreach ($request->items as $itemId => $valorPeso) {
+                foreach ($request->items as $itemId => $valorSeleccionado) {
+                    $puntajeObtenido = 0;
+                    if ($valorSeleccionado === 'Cumple' || $valorSeleccionado === 'No Aplica') {
+                        $puntajeObtenido = \App\Models\ItemEstandar::where('id', $itemId)->value('porcentaje') ?: 0;
+                    }
+                    
                     \App\Models\EvaluacionRespuesta::create([
                         'evaluacion_id'    => $evaluacion->id,
                         'item_estandar_id' => $itemId,
-                        'calificacion'     => 'Cumple',
-                        'puntaje_obtenido' => $valorPeso,
+                        'calificacion'     => $valorSeleccionado,
+                        'puntaje_obtenido' => $puntajeObtenido,
                     ]);
                 }
             }
@@ -191,7 +206,6 @@ class EvaluacionController extends Controller
 
         } catch (\Exception $e) {
             DB::rollback();
-            dd($e->getMessage());
             return redirect()->back()->with('error', 'Error al actualizar: ' . $e->getMessage());
         }
     }
@@ -225,20 +239,13 @@ class EvaluacionController extends Controller
 
     public function descargarPDF($id)
     {
-        // 1. Cargamos la evaluación con todas sus relaciones necesarias
-        // Incluimos 'respuestas' para saber qué marcó el usuario
         $evaluacion = Evaluacion::with(['user', 'empresa', 'respuestas.itemEstandar'])->findOrFail($id);
-
-        // 2. Traemos la empresa específica de esta evaluación (No la primera de la tabla)
         $perfil = $evaluacion->empresa; 
-
-        // 3. FILTRAR ESTÁNDARES: Solo traer los que corresponden a la plantilla aplicada
         $estandares = \App\Models\ItemEstandar::where('activo', true)
                         ->where('tipo_plantilla', '<=', $evaluacion->tipo_plantilla_aplicada)
                         ->orderBy('numeral', 'asc')
                         ->get();
 
-        // --- LÓGICA PARA EL LOGO EN BASE64 ---
         $logoBase64 = null;
         if ($perfil && $perfil->logo_path) {
             $path = public_path('storage/' . $perfil->logo_path);
@@ -249,8 +256,6 @@ class EvaluacionController extends Controller
             }
         }
 
-        // 4. GENERAR EL PDF
-        // Pasamos también un array de IDs de las respuestas para marcar los "Cumple" en el PDF
         $respuestasIds = $evaluacion->respuestas->pluck('item_estandar_id')->toArray();
 
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('evaluaciones.pdf', compact(

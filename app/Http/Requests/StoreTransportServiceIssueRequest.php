@@ -1,0 +1,4 @@
+<?php
+namespace App\Http\Requests;
+use Illuminate\Foundation\Http\FormRequest;
+class StoreTransportServiceIssueRequest extends FormRequest { public function authorize():bool{return true;} public function rules():array{return ['issue_type'=>'required|in:delay,vehicle_failure,vehicle_change,driver_change,monitor_change,route_change,passenger_issue,traffic,weather,documentation,service_interruption,accident_or_collision,other','severity'=>'required|in:low,medium,high,critical','description'=>'required|string|min:10|max:4000','action_taken'=>'nullable|string|max:4000','evidence'=>'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120'];} public function attributes():array{return ['issue_type'=>'tipo de novedad','severity'=>'severidad','description'=>'descripción','action_taken'=>'acción tomada','evidence'=>'evidencia'];} }

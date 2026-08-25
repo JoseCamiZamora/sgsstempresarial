@@ -1,0 +1,2 @@
+<?php
+namespace App\Http\Requests;class RescheduleTransportServiceRequest extends StoreTransportServiceRequest{public function authorize():bool{return$this->user()?->can('transporte.servicios.editar')??false;}public function rules():array{$rules=parent::rules();unset($rules['transport_route_id'],$rules['service_type'],$rules['shift'],$rules['notes']);$rules['reason']='required|string|min:10|max:2000';return$rules;}}

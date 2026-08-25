@@ -1,0 +1,3 @@
+<?php
+namespace Tests\Unit; use App\Services\TrainingEvaluationScoringService; use PHPUnit\Framework\TestCase;
+class TrainingEvaluationScoringTest extends TestCase{public function test_percentage_and_rounding():void{$s=new TrainingEvaluationScoringService();$this->assertSame(80.0,$s->calculatePercentage(8,10));$this->assertSame(0.0,$s->calculatePercentage(0,0));$this->assertSame(33.33,$s->calculatePercentage(1,3));}public function test_threshold_is_configurable_and_precise():void{$s=new TrainingEvaluationScoringService();$this->assertSame('failed',$s->determineResult(79.99,80));$this->assertSame('passed',$s->determineResult(80.00,80));$this->assertSame('passed',$s->determineResult(80.01,80));}}

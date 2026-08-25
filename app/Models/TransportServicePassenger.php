@@ -1,0 +1,4 @@
+<?php
+namespace App\Models;
+use Illuminate\Database\Eloquent\Model;
+class TransportServicePassenger extends Model { protected $fillable=['transport_service_id','transport_passenger_id','transport_route_stop_id','passenger_name_snapshot','group_snapshot','expected','status','added_manually','added_during_operation','added_reason','added_by','excluded_reason','excluded_by','excluded_at','status_recorded_at','status_recorded_by']; protected $casts=['expected'=>'boolean','added_manually'=>'boolean','added_during_operation'=>'boolean','excluded_at'=>'datetime','status_recorded_at'=>'datetime']; public function service(){return $this->belongsTo(TransportService::class,'transport_service_id');} public function passenger(){return $this->belongsTo(TransportPassenger::class,'transport_passenger_id');} public function stop(){return $this->belongsTo(TransportRouteStop::class,'transport_route_stop_id');} }

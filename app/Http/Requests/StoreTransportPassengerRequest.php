@@ -1,0 +1,4 @@
+<?php
+namespace App\Http\Requests;
+use Illuminate\Foundation\Http\FormRequest;use Illuminate\Validation\Rule;
+class StoreTransportPassengerRequest extends FormRequest {public function authorize():bool{return $this->user()?->can('transporte.pasajeros.gestionar')??false;}public function rules():array{$company=$this->user()->company_id;$id=$this->route('passenger')?->id;return['passenger_type'=>['required',Rule::in(array_keys(config('transport.passenger_types')))],'name'=>'required|string|max:255','identification'=>['nullable','string','max:40',Rule::unique('transport_passengers')->where(fn($q)=>$q->where('company_id',$company))->ignore($id)],'grade_group'=>'nullable|string|max:80','responsible_name'=>'nullable|string|max:255','responsible_phone'=>'nullable|string|max:40','status'=>'required|in:active,inactive'];}}

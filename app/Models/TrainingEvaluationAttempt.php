@@ -1,0 +1,3 @@
+<?php
+namespace App\Models; use Illuminate\Database\Eloquent\Model;
+class TrainingEvaluationAttempt extends Model{protected $fillable=['uuid','training_evaluation_id','attendance_participant_id','employee_id','attempt_number','started_at','submitted_at','raw_score','possible_score','percentage_score','result','status'];protected $casts=['started_at'=>'datetime','submitted_at'=>'datetime','raw_score'=>'decimal:2','possible_score'=>'decimal:2','percentage_score'=>'decimal:2'];public function evaluation(){return$this->belongsTo(TrainingEvaluation::class,'training_evaluation_id');}public function participant(){return$this->belongsTo(AttendanceParticipant::class,'attendance_participant_id');}public function answers(){return$this->hasMany(TrainingEvaluationAnswer::class);}}

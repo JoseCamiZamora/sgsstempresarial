@@ -1,0 +1,2 @@
+<?php
+namespace App\Models;use Illuminate\Database\Eloquent\Model;class TransportServiceChange extends Model{public$timestamps=false;protected$fillable=['transport_service_id','change_type','old_data','new_data','reason','changed_by','changed_at'];protected$casts=['old_data'=>'array','new_data'=>'array','changed_at'=>'datetime'];public function service(){return$this->belongsTo(TransportService::class,'transport_service_id');}}

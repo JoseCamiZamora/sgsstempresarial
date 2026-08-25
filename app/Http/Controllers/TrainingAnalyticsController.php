@@ -1,0 +1,4 @@
+<?php
+namespace App\Http\Controllers;
+use App\Models\TrainingAlert;use App\Services\{TrainingGapService,TrainingIndicatorService,TrainingStandardsEvidenceService};use Illuminate\Http\Request;
+class TrainingAnalyticsController extends Controller{public function index(Request$r,TrainingIndicatorService$i,TrainingGapService$g,TrainingStandardsEvidenceService$e){$company=$r->user()->company_id;$year=(int)$r->input('year',now()->year);$metrics=$i->forCompany($company,$year);$gapSummary=$g->summary($company,$r->only('job','area'));$alerts=TrainingAlert::forCompany($company)->whereIn('status',['open','acknowledged'])->orderByRaw("case when severity='critical' then 0 else 1 end")->limit(8)->get();$evidence=$e->getAvailableEvidence($company,$year);return view('training.analytics.index',compact('metrics','gapSummary','alerts','evidence','year'));}}

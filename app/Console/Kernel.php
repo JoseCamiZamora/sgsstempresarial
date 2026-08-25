@@ -26,6 +26,13 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command('sgsst:notificar-actividades')->dailyAt('09:00');
         $schedule->command('notificar:plan-trabajo')->dailyAt('08:00');
+        $schedule->command('sgsst:alertas-mes')->monthlyOn(1, '08:00');
+        $schedule->command('sgsst:check-committee-operations')->dailyAt('07:30')->withoutOverlapping();
+        $schedule->command('sgsst:close-expired-attendance')->everyFiveMinutes()->withoutOverlapping();
+        $schedule->command('sgsst:training-reminders')->everyFiveMinutes()->withoutOverlapping();
+        $schedule->command('sgsst:check-training-alerts')->dailyAt('06:30')->withoutOverlapping();
+        $schedule->command('transport:check-scheduling')->everyThirtyMinutes()->withoutOverlapping();
+        $schedule->command('transport:check-control')->everyThirtyMinutes()->withoutOverlapping();
     }
 
     /**

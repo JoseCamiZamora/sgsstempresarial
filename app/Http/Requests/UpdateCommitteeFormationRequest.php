@@ -1,0 +1,8 @@
+<?php
+namespace App\Http\Requests;
+use Illuminate\Foundation\Http\FormRequest;
+class UpdateCommitteeFormationRequest extends FormRequest {
+ public function authorize():bool{return $this->user()?->can('comites.editar')??false;}
+ public function rules():array{return['title'=>['required','string','max:255'],'description'=>['nullable','string','max:5000'],'start_date'=>['required','date'],'end_date'=>['required','date','after:start_date'],'call_start_date'=>['required','date'],'call_end_date'=>['required','date','after_or_equal:call_start_date'],'candidate_registration_start'=>['required','date','after_or_equal:call_start_date'],'candidate_registration_end'=>['required','date','after:candidate_registration_start'],'election_start_at'=>['required','date','after:candidate_registration_end'],'election_end_at'=>['required','date','after:election_start_at'],'requirements'=>['nullable','string','max:5000'],'notes'=>['nullable','string','max:5000']];}
+ public function messages():array{return['required'=>'El campo :attribute es obligatorio.','end_date.after'=>'El fin del período debe ser posterior al inicio.','call_end_date.after_or_equal'=>'El cierre de convocatoria debe ser igual o posterior a la apertura.','candidate_registration_start.after_or_equal'=>'El inicio de inscripciones debe ser igual o posterior a la apertura de convocatoria.','candidate_registration_end.after'=>'El cierre de inscripciones debe ser posterior al inicio.','election_start_at.after'=>'La apertura de elección debe ser posterior al cierre de inscripciones.','election_end_at.after'=>'El cierre de elección debe ser posterior a su apertura.'];}
+}

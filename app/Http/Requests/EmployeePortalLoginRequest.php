@@ -1,0 +1,2 @@
+<?php
+namespace App\Http\Requests;use Illuminate\Foundation\Http\FormRequest;class EmployeePortalLoginRequest extends FormRequest{public function authorize(){return true;}public function rules(){return['cedula'=>'required|string|max:30','codigo'=>'required|string|min:6|max:30'];}public function messages(){return['cedula.required'=>'Ingrese su número de cédula.','codigo.required'=>'Ingrese su código de acceso.'];}}

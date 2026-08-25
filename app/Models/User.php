@@ -16,6 +16,7 @@ class User extends Authenticatable
 
     // 1. Actualizamos los campos según tu base de datos
     protected $fillable = [
+        'company_id',
         'identificacion',
         'tipo',
         'name', // Cambiado de 'name' a 'nombres'
@@ -34,6 +35,8 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function company() { return $this->belongsTo(PerfilEmpresa::class, 'company_id'); }
     
     // Opcional: Si tu sistema de login espera 'identificacion' en lugar de 'email'
     // puedes agregar esta función para que Laravel lo sepa:

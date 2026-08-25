@@ -15,12 +15,23 @@ class Documento extends Model
         'categoria',
         'archivo_ruta',
         'extension_archivo',
-        'subido_por'
+        'subido_por',
+        'codigo',
+        'nombre_archivo',
+        'fecha_vigencia_inicio',
+        'fecha_vigencia_fin',
+        'version',
+        'tipo_accion'
     ];
 
     // Relación para saber qué administrador subió el documento
     public function autor()
     {
         return $this->belongsTo(User::class, 'subido_por');
+    }
+
+    public function cambios()
+    {
+        return $this->hasMany(DocumentoCambio::class);
     }
 }

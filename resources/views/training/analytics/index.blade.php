@@ -1,0 +1,12 @@
+@extends('layouts.app')
+@section('content')
+<div class="container-fluid py-3">
+@include('training.partials.nav')
+<div class="d-flex justify-content-between align-items-center"><h2>Analítica de capacitaciones — {{ $year }}</h2><form><select name="year" onchange="this.form.submit()" class="form-control">@for($y=now()->year;$y>=now()->year-5;$y--)<option value="{{$y}}" @selected($year===$y)>{{$y}}</option>@endfor</select></form></div>
+@php $cards=['Ejecución' => $metrics['program_execution'],'Cobertura' => $metrics['coverage'],'Evaluación' => $metrics['evaluation'],'Aprobación' => $metrics['approval'],'Refuerzos' => $metrics['reinforcement'],'Necesidades atendidas' => $metrics['needs_attended']]; @endphp
+<div class="row">@foreach($cards as $name => $metric)<div class="col-md-4 col-xl-2 mb-3"><div class="card h-100"><div class="card-body"><small>{{$name}}</small><h3>{{$metric['value']===null?'N/A':number_format($metric['value'],2).'%'}} </h3><small>{{$metric['numerator']}} / {{$metric['denominator']}}</small></div></div></div>@endforeach</div>
+<div class="row"><div class="col-md-6"><div class="card"><div class="card-body"><h5>Brechas de formación</h5><p><strong>{{$gapSummary['employees']}}</strong> trabajadores · {{$gapSummary['total']}} requisitos · {{$gapSummary['critical']}} prioritarios</p><a class="btn btn-outline-danger" href="{{route('training.gaps.index')}}">Revisar brechas</a></div></div></div><div class="col-md-6"><div class="card"><div class="card-body"><h5>Credenciales</h5><p>Vigentes {{$metrics['credentials']['valid']}} · Por vencer {{$metrics['credentials']['expiring']}} · Vencidas {{$metrics['credentials']['expired']}}</p><a href="{{route('training.matrix.index')}}" class="btn btn-outline-primary">Ver matriz</a></div></div></div></div>
+<div class="card mt-3"><div class="card-body"><h5>Alertas prioritarias</h5>@forelse($alerts as $a)<div class="alert {{$a->severity==='critical'?'alert-danger':'alert-warning'}} py-2">{{$a->title}} — {{$a->message}}</div>@empty<p>Sin alertas persistentes. Ejecute el análisis.</p>@endforelse<a href="{{route('training.alerts.index')}}">Gestionar alertas</a></div></div>
+<div class="mt-3"><a class="btn btn-danger" href="{{route('training.reports.pdf',['year'=>$year])}}">Informe PDF</a> <a class="btn btn-success" href="{{route('training.reports.excel',['year'=>$year])}}">Indicadores Excel</a> <a class="btn btn-outline-secondary" href="{{route('training.standards.index',['year'=>$year])}}">Evidencias para Estándares Mínimos</a></div>
+</div>@endsection
+

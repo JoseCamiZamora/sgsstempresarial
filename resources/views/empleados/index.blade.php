@@ -11,9 +11,46 @@
             <h2 class="font-weight-bold text-primary">👥 Directorio de Empleados</h2>
             <p class="text-muted">Gestión integral de personal y perfiles sociodemográficos.</p>
         </div>
-        <a href="{{ route('empleados.create') }}" class="btn btn-primary btn-lg shadow-sm">
-            <i class="fa fa-user-plus mr-2"></i> Nuevo Empleado
-        </a>
+        <div>
+            <button type="button" class="btn btn-outline-primary btn-lg shadow-sm" data-toggle="modal" data-target="#modalCargaMasiva">
+                <i class="fa fa-file-excel mr-2"></i> Cargue Masivo
+            </button>
+            <a href="{{ route('empleados.create') }}" class="btn btn-primary btn-lg shadow-sm">
+                <i class="fa fa-user-plus mr-2"></i> Nuevo Empleado
+            </a>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalCargaMasiva" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" style="color:white"><i class="fa fa-file-excel mr-2"></i>Cargue masivo de empleados</h5>
+                    <button type="button" class="close text-white" data-dismiss="modal"><span>&times;</span></button>
+                </div>
+                <form action="{{ route('empleados.import.store') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <div class="modal-body">
+                        <p class="text-muted small">
+                            Suba un archivo Excel (.xlsx) con un empleado por fila. Se validará que la cédula y el correo no
+                            estén duplicados; por cada fila válida se crea el empleado, su usuario de acceso (contraseña
+                            inicial = número de cédula) y su código para el portal de firmas.
+                        </p>
+                        <a href="{{ route('empleados.import.template') }}" class="btn btn-outline-secondary btn-sm mb-3">
+                            <i class="fa fa-download mr-1"></i> Descargar plantilla de ejemplo
+                        </a>
+                        <div class="form-group">
+                            <label class="font-weight-bold">Archivo Excel <span class="text-danger">*</span></label>
+                            <input type="file" name="archivo_excel" class="form-control-file" accept=".xlsx,.xls" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary"><i class="fa fa-upload mr-1"></i> Cargar archivo</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 
    <script>

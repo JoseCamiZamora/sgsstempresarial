@@ -18,13 +18,23 @@
                         </a>
                     </li>
 
-                    {{-- SECCIÓN: GESTIÓN OPERATIVA --}}
                     @hasanyrole('Super Admin|Administrador SGSST')
+                    {{-- 1. FASE: PLANEAR --}}
                     <hr class="my-2">
-                    <div class="sidebar-heading text-muted small font-weight-bold px-3 mb-2 text-uppercase">
-                        Gestión Operativa
+                    <div class="sidebar-heading text-muted small font-weight-bold px-3 mb-2 text-uppercase" style="color: #4A90E2 !important;">
+                        <i class="fa fa-map mr-1"></i> 1. Planear
                     </div>
 
+                    <li class="nav-item mb-1">
+                        <a class="nav-link text-secondary py-1" href="{{ route('perfil.index') }}">
+                            <i class="fa fa-building mr-2 text-secondary"></i> Perfil de Empresa
+                        </a>
+                    </li>
+                    <li class="nav-item mb-1">
+                        <a class="nav-link text-secondary py-1" href="{{ route('item-estandar.index') }}">
+                            <i class="fa fa-cogs mr-2 text-secondary"></i> Configurar Ítems 0312
+                        </a>
+                    </li>
                     <li class="nav-item mb-1">
                         <a class="nav-link text-secondary py-1" href="{{ route('matriz-riesgos.index') }}">
                             <i class="fa fa-table mr-2 text-warning"></i> Matriz de Riesgos
@@ -35,107 +45,105 @@
                             <i class="fa fa-calendar mr-2 text-info"></i> Plan de Trabajo
                         </a>
                     </li>
-                    @endhasanyrole
+                    <li class="nav-item {{ request()->routeIs('committees.*') ? 'active' : '' }} mb-1">
+                        <a class="nav-link text-secondary py-1" href="{{ route('committees.index') }}">
+                            <i class="fa fa-users-cog mr-2 text-primary"></i> Comités SG-SST
+                        </a>
+                    </li>
+                    <li class="nav-item {{ request()->routeIs('training.*') ? 'active' : '' }} mb-1">
+                        <a class="nav-link text-secondary py-1" href="{{ route('training.index') }}">
+                            <i class="fa fa-graduation-cap mr-2 text-success"></i> Capacitaciones
+                        </a>
+                    </li>
 
-                    {{-- SECCIÓN: AUDITORÍA Y LEY (RES. 0312) --}}
-                    @hasanyrole('Super Admin|Administrador SGSST')
+                    {{-- 2. FASE: HACER --}}
                     <hr class="my-2">
-                    <div class="sidebar-heading text-muted small font-weight-bold px-3 mb-2 text-uppercase">
-                        Auditoría Legal
+                    <div class="sidebar-heading text-muted small font-weight-bold px-3 mb-2 text-uppercase" style="color: #1cc88a !important;">
+                        <i class="fa fa-hammer mr-1"></i> 2. Hacer
+                    </div>
+                    
+                    <li class="nav-item mb-1">
+                        <a class="nav-link text-secondary py-1" href="{{ route('usuarios.index') }}">
+                            <i class="fa fa-users mr-2 text-dark"></i> Gestión de Empleados
+                        </a>
+                    </li>
+                    <li class="nav-item mb-1">
+                        <a class="nav-link text-secondary py-1" href="{{ route('documentos.index') }}">
+                            <i class="fa fa-folder-open mr-2 text-secondary"></i> Expediente Digital
+                        </a>
+                    </li>
+                    <li class="nav-item {{ request()->routeIs('epps.*') ? 'active' : '' }} mb-1">
+                        <a class="nav-link text-secondary py-1" href="{{ route('epps.index') }}">
+                            <i class="fa fa-boxes mr-2 text-primary"></i> Catálogo de EPP
+                        </a>
+                    </li>
+                    <li class="nav-item mb-1">
+                        <a class="nav-link text-secondary py-1" href="#">
+                            <i class="fa fa-clipboard-check mr-2 text-success"></i> Entregas de EPP
+                        </a>
+                    </li>
+
+                    {{-- 3. FASE: VERIFICAR --}}
+                    <hr class="my-2">
+                    <div class="sidebar-heading text-muted small font-weight-bold px-3 mb-2 text-uppercase" style="color: #f6c23e !important;">
+                        <i class="fa fa-search mr-1"></i> 3. Verificar
                     </div>
 
-                    
                     @if($empresaPerfil)
-                        {{-- CASO A: La empresa ya existe, mostramos el link normal --}}
                         <li class="nav-item mb-1">
                             <a class="nav-link text-secondary py-1" href="{{ route('evaluacion.crear', ['empresaId' => $empresaPerfil->id]) }}">
-                                <i class="fa fa-check mr-2 text-success"></i> Nueva Autoevaluación
+                                <i class="fa fa-check-circle mr-2 text-success"></i> Nueva Autoevaluación
                             </a>
                         </li>
                         <li class="nav-item mb-1">
                             <a class="nav-link text-secondary py-1" href="{{ route('evaluacion.index') }}">
-                                <i class="fa fa-history mr-2"></i> Historial 0312
+                                <i class="fa fa-history mr-2 text-secondary"></i> Historial 0312
                             </a>
                         </li>
                     @else
-                        {{-- CASO B: No hay empresa, mostramos el link con alerta --}}
                         <li class="nav-item mb-1">
                             <a class="nav-link text-secondary py-1" href="javascript:void(0);" onclick="alertaSinEmpresa()">
                                 <i class="fa fa-lock mr-2 text-muted"></i> Nueva Autoevaluación
                             </a>
                         </li>
                     @endif
-                    @endhasanyrole
-
-                    {{-- SECCIÓN: REPORTES Y SOPORTE --}}
-                    <hr class="my-2">
-                    <div class="sidebar-heading text-muted small font-weight-bold px-3 mb-2 text-uppercase">
-                        Reportes
-                    </div>
-
-                    <li class="nav-item mb-1">
-                        <a class="nav-link text-secondary py-1" href="{{ route('incidentes.index') }}">
-                            <i class="fa fa-exclamation-triangle mr-2 text-danger"></i> Reportar Incidente
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-secondary" href="{{ route('indicadores.index') }}">
-                            <i class="fa fa-list mr-2 text-primary"></i> Indicadores de Gestión
-                        </a>
-                    </li>
-                    <li class="nav-item mb-1">
-                        <a class="nav-link text-secondary py-1" href="{{ route('documentos.index') }}">
-                            <i class="fa fa-folder-open mr-2 text-secondary"></i> Documentos
-                        </a>
-                    </li>
-
-                    {{-- SECCIÓN: CONFIGURACIÓN DEL SISTEMA --}}
-                    @hasanyrole('Super Admin|Administrador SGSST')
-                    <hr class="my-2">
-                    <div class="sidebar-heading text-muted small font-weight-bold px-3 mb-2 text-uppercase">
-                        Configuración
-                    </div>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('perfil.index') }}">
-                            <i class="fa fa-cogs mr-2"></i> Perfil de Empresa
-                        </a>
-                    </li>
-
-                    <li class="nav-item mb-1">
-                        <a class="nav-link text-secondary py-1" href="{{ route('item-estandar.index') }}">
-                            <i class="fa fa-cog mr-2 text-dark"></i> Configurar Ítems 0312
-                        </a>
-                    </li>
+                    
                     <li class="nav-item mb-1">
                         <a class="nav-link text-secondary py-1" href="{{ route('estadisticas.index') }}">
                             <i class="fa fa-database mr-2 text-dark"></i> Datos Mensuales
                         </a>
                     </li>
                     <li class="nav-item mb-1">
-                        <a class="nav-link text-secondary py-1" href="{{ route('usuarios.index') }}">
-                            <i class="fa fa-users mr-2 text-dark"></i> Gestión de Usuarios
+                        <a class="nav-link text-secondary py-1" href="{{ route('indicadores.index') }}">
+                            <i class="fa fa-chart-line mr-2 text-primary"></i> Indicadores de Gestión
                         </a>
                     </li>
-                    
+
+                    {{-- 4. FASE: ACTUAR --}}
                     <hr class="my-2">
-                    <div class="sidebar-heading text-muted small font-weight-bold px-3 mb-2 text-uppercase">
-                        Suministros y Dotación
+                    <div class="sidebar-heading text-muted small font-weight-bold px-3 mb-2 text-uppercase" style="color: #e74a3b !important;">
+                        <i class="fa fa-sync-alt mr-1"></i> 4. Actuar
                     </div>
 
-                    <li class="nav-item {{ request()->routeIs('epps.*') ? 'active' : '' }}">
-                        <a class="nav-link" href="{{ route('epps.index') }}">
-                            <i class="fa fa-fw fa-boxes"></i>
-                            <span>Catálogo de EPP</span>
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <i class="fa fa-fw fa-clipboard-check"></i>
-                            <span>Registro de Entregas</span>
+                    <li class="nav-item mb-4">
+                        <a class="nav-link text-secondary py-1" href="{{ route('incidentes.index') }}">
+                            <i class="fa fa-exclamation-triangle mr-2 text-danger"></i> Reportar Incidente
                         </a>
                     </li>
                     @endhasanyrole
+
+                    @can('transporte.ver')
+                    {{-- MÓDULO ADMINISTRATIVO INDEPENDIENTE: no pertenece al ciclo PHVA --}}
+                    <hr class="my-3">
+                    <div class="sidebar-heading small font-weight-bold px-3 mb-2 text-uppercase" style="color:#6f42c1;">
+                        <i class="fa fa-bus mr-1"></i> Gestión de Transporte
+                    </div>
+                    <li class="nav-item {{ request()->routeIs('transport.*') ? 'active' : '' }} mb-1">
+                        <a class="nav-link text-secondary py-1" href="{{ route('transport.index') }}">
+                            <i class="fa fa-route mr-2" style="color:#6f42c1;"></i> Transporte — Hoy
+                        </a>
+                    </li>
+                    @endcan
                 </ul>
             </div>
         </nav>
@@ -190,9 +198,9 @@
                               </div>
                           </div>
                       </div>
-                  </div>
-              </div>
-              <div class="col-xl-3 col-md-6 mb-4">
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6 mb-4">
                 <div class="card border-left-success shadow h-100 py-2">
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
@@ -217,8 +225,26 @@
                         </div>
                     </div>
                 </div>
-            </div>
+                </div>
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-primary shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-2">Comités SG-SST</div>
+                            @foreach(['COPASST' => 'COPASST', 'CCL' => 'Comité de Convivencia'] as $type => $label)
+                                @php
+                                    $committee = $committeeSummary->get($type);
+                                @endphp
+                                <div class="d-flex justify-content-between small"><span>{{ $label }}</span><span class="badge badge-{{ $committee?->status?->value === 'active' ? 'success' : ($committee ? 'warning' : 'secondary') }}">{{ $committee ? $committee->status->label() : 'Sin configurar' }}</span></div>@if($committee?->latestFinalFormation)<small class="text-muted">Vigencia: {{$committee->latestFinalFormation->effective_from->format('d/m/Y')}} – {{$committee->latestFinalFormation->effective_to->format('d/m/Y')}}</small>@endif
+                            @endforeach
+                            <a href="{{ route('committees.index') }}" class="btn btn-sm btn-link px-0 mt-2">Gestionar comités <i class="fa fa-chevron-right ml-1"></i></a>
+                        </div>
+                    </div>
+                </div>
 
+                <div class="col-md-3 mb-4">
+                    <div class="card border-left-success shadow h-100 py-2"><div class="card-body"><div class="text-xs font-weight-bold text-success text-uppercase mb-1">Capacitaciones SG-SST</div><div class="small">Programa: <b>{{ $trainingProgram?->status ?? 'No creado' }}</b></div><div class="small">Ejecución: <b>{{ $trainingExecution }}%</b></div><div class="small">Próxima: <b>{{ $nextTraining?->scheduled_start_at?->format('d/m/Y H:i') ?? 'Sin programar' }}</b></div><div class="small">Inducciones pendientes: <b>{{ $pendingInductions }}</b></div><a href="{{ route('training.index') }}" class="btn btn-sm btn-link px-0">Gestionar capacitaciones</a></div></div>
+                </div>
+                @can('transporte.ver')<div class="col-md-3 mb-4"><div class="card shadow h-100 py-2" style="border-left:4px solid #6f42c1"><div class="card-body"><div class="text-xs font-weight-bold text-uppercase mb-1" style="color:#6f42c1">Gestión de Transporte</div><div class="small">Servicios hoy: <b>{{$transportSummary['services']}}</b></div><div class="small">En curso: <b>{{$transportSummary['in_progress']}}</b></div><div class="small">Llegadas pendientes: <b>{{$transportSummary['arrivals_pending']}}</b></div><div class="small">Novedades abiertas: <b>{{$transportSummary['issues']}}</b></div><div class="small">Documentos por vencer: <b>{{$transportSummary['documents_expiring']}}</b></div><a href="{{route('transport.index')}}" class="btn btn-sm btn-link px-0">Ver Transporte</a></div></div></div>@endcan
                 <div class="col-md-3 mb-4">
                     <div class="card shadow-sm border-0 h-100 py-2" style="border-left: 4px solid #f6c23e;">
                         <div class="card-body">

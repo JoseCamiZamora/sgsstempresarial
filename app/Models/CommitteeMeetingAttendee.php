@@ -1,0 +1,2 @@
+<?php
+namespace App\Models;use Illuminate\Database\Eloquent\Model;class CommitteeMeetingAttendee extends Model{protected $fillable=['meeting_id','committee_member_id','employee_id','external_name','attendance_status','arrival_time','observation','replaces_member_id'];public function member(){return $this->belongsTo(CommitteeMember::class,'committee_member_id');}public function employee(){return $this->belongsTo(Empleado::class);}public function replacementFor(){return $this->belongsTo(CommitteeMember::class,'replaces_member_id');}}

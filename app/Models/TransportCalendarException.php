@@ -1,0 +1,2 @@
+<?php
+namespace App\Models;use Illuminate\Database\Eloquent\{Builder,Model};class TransportCalendarException extends Model{protected$fillable=['company_id','transport_route_id','exception_date','type','reason','applies_to_all_routes','created_by'];protected$casts=['exception_date'=>'date','applies_to_all_routes'=>'boolean'];public function scopeForCompany(Builder$q,int$id):Builder{return$q->where('company_id',$id);}public function route(){return$this->belongsTo(TransportRoute::class,'transport_route_id');}}

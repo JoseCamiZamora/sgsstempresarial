@@ -1,0 +1,3 @@
+<?php
+namespace App\Services; use App\Models\TrainingEvaluationQuestion;
+class TrainingEvaluationScoringService{public function scoreQuestion(TrainingEvaluationQuestion$q,array$selected):array{$correct=$q->options()->where('is_correct',true)->pluck('id')->map(fn($id)=>(int)$id)->sort()->values()->all();$selected=collect($selected)->map(fn($id)=>(int)$id)->unique()->sort()->values()->all();$ok=$correct===$selected;return['correct'=>$ok,'points'=>$ok?(float)$q->points:0.0];}public function calculatePercentage(float$raw,float$possible):float{return$possible>0?round(($raw/$possible)*100,2):0.0;}public function determineResult(float$percentage,float$passing):string{return$percentage+0.00001>=$passing?'passed':'failed';}}

@@ -1,0 +1,3 @@
+<?php
+namespace App\Enums;
+enum CommitteeElectionStatus:string {case DRAFT='draft';case PREPARED='prepared';case SCHEDULED='scheduled';case OPEN='open';case CLOSED='closed';case SCRUTINIZED='scrutinized';case RESULTS_VALIDATED='results_validated';case READY_FOR_FORMATION='ready_for_formation';case SUSPENDED='suspended';case ANNULLED='annulled';case CANCELLED='cancelled'; public function label():string{return match($this){self::DRAFT=>'Borrador',self::PREPARED=>'Preparada',self::SCHEDULED=>'Programada',self::OPEN=>'Abierta',self::CLOSED=>'Cerrada',self::SCRUTINIZED=>'Escrutada',self::RESULTS_VALIDATED=>'Resultados validados',self::READY_FOR_FORMATION=>'Lista para conformación',self::SUSPENDED=>'Suspendida',self::ANNULLED=>'Anulada',self::CANCELLED=>'Cancelada'};}}

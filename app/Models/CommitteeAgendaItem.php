@@ -1,0 +1,2 @@
+<?php
+namespace App\Models;use Illuminate\Database\Eloquent\Model;class CommitteeAgendaItem extends Model{protected $fillable=['meeting_id','sort_order','title','description','type','presented_by','status','development','conclusions','observations'];public function meeting(){return $this->belongsTo(CommitteeMeeting::class);}public function decisions(){return $this->hasMany(CommitteeDecision::class,'agenda_item_id');}}

@@ -124,6 +124,16 @@ class HomeController extends Controller
 
         $totalEpps = \App\Models\Epp::count();
 
+        $committeeSummary = \App\Models\Committee::with(['latestProcess','latestFinalFormation'])->get()->keyBy(fn ($committee) => $committee->type->value);
+        $trainingProgram = \App\Models\TrainingProgram::forCompany($usuarioactual->company_id)->where('year', now()->year)->latest('version')->first();
+        $trainingTotal = $trainingProgram?->items()->count() ?? 0;
+        $trainingExecuted = $trainingProgram?->items()->where('status', 'executed')->count() ?? 0;
+        $trainingExecution = $trainingTotal ? round(($trainingExecuted / $trainingTotal) * 100) : 0;
+        $nextTraining = \App\Models\TrainingSession::forCompany($usuarioactual->company_id)->whereIn('status', ['scheduled','called'])->where('scheduled_start_at', '>', now())->orderBy('scheduled_start_at')->first();
+        $pendingInductions = \App\Models\Empleado::where('company_id', $usuarioactual->company_id)->active()->whereNotNull('fecha_ingreso')->get()->filter(fn ($employee) => ! \App\Models\TrainingSession::forCompany($usuarioactual->company_id)->where('training_type', 'induction')->where('status', 'closed')->whereHas('attendanceEvent.participants', fn ($query) => $query->where('employee_id', $employee->id))->exists())->count();
+        $transportToday = \App\Models\TransportService::forCompany($usuarioactual->company_id)->whereDate('service_date', today());
+        $transportSummary = ['services'=>(clone $transportToday)->count(),'in_progress'=>(clone $transportToday)->where('status','in_progress')->count(),'arrivals_pending'=>(clone $transportToday)->where('status','in_progress')->count(),'issues'=>\App\Models\TransportServiceIssue::forCompany($usuarioactual->company_id)->where('status','open')->count(),'documents_expiring'=>\App\Models\TransportAlert::forCompany($usuarioactual->company_id)->where('status','open')->where('type','document_expiring')->count()];
+
         return view('home', compact(
             'riesgosCriticos', 
             'totalUsuarios', 
@@ -134,7 +144,7 @@ class HomeController extends Controller
             'puntaje0312', 'estado0312',
             'labelsEstandares', 'valoresEstandares',
             'fecha0312','empresaPerfil','totalEmpleados',
-            'totalEpps'
+            'totalEpps', 'committeeSummary', 'trainingProgram', 'trainingExecution', 'nextTraining', 'pendingInductions', 'transportSummary'
         ));
     }
     

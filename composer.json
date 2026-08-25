@@ -12,6 +12,7 @@
         "php": "^8.1.0",
         "barryvdh/laravel-dompdf": "^3.1",
         "barryvdh/laravel-snappy": "^1.0.3",
+        "endroid/qr-code": "5.0",
         "laravel/framework": "^10.0",
         "laravel/tinker": "^2.0",
         "laravel/ui": "^4.2",

@@ -37,6 +37,16 @@
                 confirmButtonColor: '#e74a3b',
             });
         @endif
+        @if(session('portal_code_generated'))
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Código de firma generado',
+                    html: 'Anótelo y compártalo con el empleado ahora — no podrá volver a verlo.<br><h3 class="mt-2">{{ session("portal_code_generated") }}</h3>',
+                    confirmButtonText: 'Listo',
+                });
+            });
+        @endif
     </script>
 
     <div class="row">
@@ -66,6 +76,19 @@
                     <h6 class="font-weight-bold text-danger text-uppercase mb-3 small">🚨 Contacto de Emergencia</h6>
                     <p class="mb-1"><strong>Nombre:</strong> {{ $empleado->contacto_emergencia_nombre ?? 'N/A' }}</p>
                     <p class="mb-0"><strong>Teléfono:</strong> {{ $empleado->contacto_emergencia_telefono ?? 'N/A' }}</p>
+                </div>
+            </div>
+
+            <div class="card shadow mb-4 no-print">
+                <div class="card-body">
+                    <h6 class="font-weight-bold text-uppercase mb-2 small">🔐 Portal de firmas</h6>
+                    <p class="small text-muted mb-2">Código de acceso para que el empleado firme sus documentos pendientes desde su celular, sin necesidad de una cuenta del sistema.</p>
+                    <form method="POST" action="{{ route('empleados.portal.regenerate', $empleado->id) }}" onsubmit="return confirm('¿Generar un nuevo código de firma para este empleado? El código anterior dejará de funcionar de inmediato.');">
+                        @csrf
+                        <button class="btn btn-outline-primary btn-sm btn-block">
+                            {{ $empleado->portalCredential ? 'Regenerar código de firma' : 'Generar código de firma' }}
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -219,6 +242,8 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="col-12 mt-4"><div class="card shadow-sm"><div class="card-header"><b>Formación y Competencias SST</b></div><div class="card-body"><h6>Ruta vigente</h6>@forelse($trainingRoute as $route)<div><span class="badge badge-{{ $route['status']==='completed'?'success':($route['status']==='expiring'?'warning':'danger') }}">{{ $route['status'] }}</span> {{ $route['requirement']->topic->name }} — {{ $route['requirement']->requirement_type }}</div>@empty<p class="text-muted">Sin requisitos configurados.</p>@endforelse<hr><h6>Evaluaciones</h6><table class="table table-sm"><tr><th>Fecha</th><th>Tema</th><th>Resultado</th></tr>@foreach($trainingAttempts as $attempt)<tr><td>{{ $attempt->submitted_at?->format('d/m/Y') }}</td><td>{{ $attempt->evaluation->topic->name }}</td><td>{{ $attempt->percentage_score }}% — {{ $attempt->result==='passed'?'Aprobado':'Requiere refuerzo' }}</td></tr>@endforeach</table><p>Refuerzos pendientes: <b>{{ $trainingReinforcements->where('status','pending')->count() }}</b> · Credenciales registradas: <b>{{ $trainingCredentials->count() }}</b></p></div></div></div>
 
             </div> </div>
     </div>

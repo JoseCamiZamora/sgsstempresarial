@@ -38,7 +38,7 @@
                         <tr>
                             <th>Estándar Mínimo</th>
                             <th width="120" class="text-center">Peso (%)</th>
-                            <th width="100" class="text-center">Cumple</th>
+                            <th width="150" class="text-center">Estado</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -52,12 +52,11 @@
                                 {{ $item->porcentaje }}%
                             </td>
                             <td class="text-center align-middle">
-                                <input type="checkbox" 
-                                       name="items[{{ $item->id }}]" 
-                                       value="{{ $item->porcentaje }}" 
-                                       class="check-item" 
-                                       style="transform: scale(1.8); cursor: pointer;"
-                                       {{ in_array($item->id, $respuestasIds) ? 'checked' : '' }}>
+                                <select name="items[{{ $item->id }}]" class="form-select select-item" data-peso="{{ $item->porcentaje }}" style="cursor: pointer;">
+                                    <option value="No Aplica" {{ isset($respuestasMap[$item->id]) && $respuestasMap[$item->id] == 'No Aplica' ? 'selected' : '' }}>No Aplica</option>
+                                    <option value="No Cumple" {{ isset($respuestasMap[$item->id]) && $respuestasMap[$item->id] == 'No Cumple' ? 'selected' : '' }}>No Cumple</option>
+                                    <option value="Cumple" {{ (!isset($respuestasMap[$item->id]) || $respuestasMap[$item->id] == 'Cumple') ? 'selected' : '' }}>Cumple</option>
+                                </select>
                             </td>
                         </tr>
                         @endforeach
@@ -101,7 +100,7 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const checks = document.querySelectorAll('.check-item');
+        const selects = document.querySelectorAll('.select-item');
         const display = document.getElementById('totalDisplay');
         const estadoTexto = document.getElementById('estadoTexto');
 
@@ -109,24 +108,19 @@
             let sumaMarcados = 0;
             let sumaTotalPosible = 0;
 
-            // 1. Sumamos lo que vale CADA checkbox que aparece en la pantalla
-            checks.forEach(check => {
-                const valor = parseFloat(check.value) || 0;
-                sumaTotalPosible += valor; // Esto sumará 36.0 en tu caso
-                
-                if (check.checked) {
-                    sumaMarcados += valor;
+            selects.forEach(select => {
+                const pesoTotal = parseFloat(select.dataset.peso) || 0;
+                sumaTotalPosible += pesoTotal;
+
+                if (select.value === 'Cumple' || select.value === 'No Aplica') {
+                    sumaMarcados += pesoTotal;
                 }
             });
 
-            // 2. Aplicamos la regla de tres: (Marcados / Total Posible) * 100
-            // Si sumaTotalPosible es 0, evitamos división por cero
             let resultadoFinal = (sumaTotalPosible > 0) ? (sumaMarcados / sumaTotalPosible) * 100 : 0;
 
-            // 3. Mostramos el resultado
             display.innerText = resultadoFinal.toFixed(1) + '%';
 
-            // 4. Semáforo de estados
             if (resultadoFinal < 60) {
                 estadoTexto.innerText = "ESTADO: CRÍTICO";
                 estadoTexto.className = "mb-0 font-weight-bold text-danger";
@@ -139,12 +133,10 @@
             }
         }
 
-        // Escuchar cambios
-        checks.forEach(check => {
-            check.addEventListener('change', calcular);
+        selects.forEach(select => {
+            select.addEventListener('change', calcular);
         });
 
-        // EJECUCIÓN INICIAL (Crucial para Editar para que no empiece en 0%)
         calcular();
     });
 </script>

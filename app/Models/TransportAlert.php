@@ -1,0 +1,3 @@
+<?php
+namespace App\Models;use Illuminate\Database\Eloquent\{Builder,Model};
+class TransportAlert extends Model {protected$fillable=['company_id','transport_service_id','alert_key','type','severity','title','message','status','last_detected_at','resolved_at','acknowledged_at','acknowledged_by','dismissed_at','dismissed_by'];protected$casts=['last_detected_at'=>'datetime','resolved_at'=>'datetime','acknowledged_at'=>'datetime','dismissed_at'=>'datetime'];public function scopeForCompany(Builder$q,int$id):Builder{return$q->where('company_id',$id);}public function service(){return$this->belongsTo(TransportService::class,'transport_service_id');}}
