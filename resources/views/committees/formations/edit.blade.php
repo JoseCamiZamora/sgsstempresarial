@@ -3,8 +3,6 @@
 <div class="container my-4">
  <a href="{{route('committees.formations.show',$formation)}}" class="text-secondary">← Volver al proceso</a>
  <div class="card shadow border-0 mt-3"><div class="card-header bg-white"><h4 class="mb-0">Editar {{$formation->committee->name}}</h4></div><div class="card-body">
- @if($errors->any())<div class="alert alert-danger"><ul class="mb-0">@foreach($errors->all() as $error)<li>{{$error}}</li>@endforeach</ul></div>@endif
- @if(session('error'))<div class="alert alert-danger">{{session('error')}}</div>@endif
  <form method="POST" action="{{route('committees.formations.update',$formation)}}">@csrf @method('PUT')
   <div class="row">
    <div class="col-12 form-group"><label>Título</label><input name="title" class="form-control" value="{{old('title',$formation->title)}}" required></div>

@@ -8,29 +8,6 @@
             <i class="fa fa-arrow-left"></i> Volver al Dashboard
         </a>
     </div>
-    <script>
-            @if(session('success'))
-            
-                    document.addEventListener('DOMContentLoaded', function() {
-                        Swal.fire({
-                            icon: 'success',
-                            title: '¡Listo!',
-                            text: '{{ session("success") }}',
-                            timer: 2500,
-                            showConfirmButton: false
-                        });
-                    });
-                
-            @endif
-            @if(session('error'))
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Ups... algo salió mal',
-                    text: "{{ session('error') }}",
-                    confirmButtonColor: '#e74a3b',
-                });
-            @endif
-    </script>
     <div class="card shadow mb-4">
         <div class="card-header py-3 bg-white">
             <h6 class="m-0 font-weight-bold text-primary">Registrar Nuevo Periodo</h6>

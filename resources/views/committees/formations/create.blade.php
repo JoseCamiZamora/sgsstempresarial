@@ -6,7 +6,6 @@
     <div class="card shadow border-0 mt-3">
         <div class="card-header bg-white"><h4 class="text-primary font-weight-bold mb-0">Conformación: {{ $committeeType->label() }}</h4></div>
         <div class="card-body">
-            @if($errors->any())<div class="alert alert-danger"><strong>Revise la información:</strong><ul class="mb-0">@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>@endif
             <div class="progress mb-4" style="height:8px"><div id="wizardProgress" class="progress-bar" style="width:16.66%"></div></div>
             <form action="{{ route('committees.formations.store') }}" method="POST" enctype="multipart/form-data" id="committeeWizard">
                 @csrf <input type="hidden" name="type" value="{{ $committeeType->value }}">

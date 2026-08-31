@@ -92,21 +92,6 @@
                                                            </div>
                                                             
                                                        
-                                                           @if (count($errors) > 0)
-               
-        
-                                                         
-                                                           <ul class='red-text'>
-                                                               @foreach ($errors->all() as $error)
-                                                                   <li class='red-text'><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> {{ $error }}</li>
-                                                               @endforeach
-                                                           </ul>
-                                                      
-                                             
-                                                           @endif
-                               
-                                            
-                               
                                                            <div class="md-form  col-xs-12 text-center" style='margin-top:20px; '>
                                                       
 

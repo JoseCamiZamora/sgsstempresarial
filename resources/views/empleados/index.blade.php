@@ -53,31 +53,6 @@
         </div>
     </div>
 
-   <script>
-        @if(session('success'))
-        
-                document.addEventListener('DOMContentLoaded', function() {
-                    Swal.fire({
-                        icon: 'success',
-                        title: '¡Listo!',
-                        text: '{{ session("success") }}',
-                        timer: 2500,
-                        showConfirmButton: false
-                    });
-                });
-            
-        @endif
-        @if(session('error'))
-            Swal.fire({
-                icon: 'error',
-                title: 'Ups... algo salió mal',
-                text: "{{ session('error') }}",
-                confirmButtonColor: '#e74a3b',
-            });
-        @endif
-    </script>
-
-
     <div class="card shadow border-0">
         <div class="card-body p-0">
             <div class="table-responsive">

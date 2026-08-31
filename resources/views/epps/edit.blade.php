@@ -13,17 +13,6 @@
                 </div>
 
                 <div class="card-body">
-                    {{-- Errores de validación --}}
-                    @if ($errors->any())
-                        <div class="alert alert-danger">
-                            <ul class="mb-0">
-                                @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    @endif
-
                     <form action="{{ route('epps.update', $epp->id) }}" method="POST">
                         @csrf
                         @method('PUT') {{-- Indispensable para actualizar --}}

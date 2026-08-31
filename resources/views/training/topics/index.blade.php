@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('content')
-<div class="container my-4">
+<div class="container-fluid my-4">
     <h2>Catálogo de formación</h2>
     @include('training.partials.nav')
     <form class="card card-body mb-3" method="POST" action="{{ route('training.topics.store') }}">

@@ -13,16 +13,6 @@
                 </a>
             </div>
 
-            @if ($errors->any())
-                <div class="alert alert-danger">
-                    <ul class="mb-0 pl-3">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
-
             <div class="card shadow border-0 mb-4">
                 <div class="card-body p-4">
                     <form action="{{ route('documentos.store') }}" method="POST" enctype="multipart/form-data">
@@ -43,6 +33,17 @@
                                 <option value="Capacitaciones">Capacitaciones / Certificados</option>
                                 <option value="Otros">Otros</option>
                             </select>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label class="font-weight-bold text-muted small">Prefijo del Documento</label>
+                            <select name="prefijo" class="form-control" required>
+                                <option value="" disabled selected>Seleccione el tipo documental...</option>
+                                @foreach(\App\Models\Documento::PREFIJOS as $valor => $etiqueta)
+                                    <option value="{{ $valor }}" {{ old('prefijo') === $valor ? 'selected' : '' }}>{{ $etiqueta }}</option>
+                                @endforeach
+                            </select>
+                            <small class="text-muted d-block mt-1">Define el código del documento junto con el consecutivo, ej: SST-FT-001.</small>
                         </div>
 
                         <div class="form-group mb-3">

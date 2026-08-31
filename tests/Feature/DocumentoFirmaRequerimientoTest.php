@@ -30,6 +30,7 @@ class DocumentoFirmaRequerimientoTest extends TestCase
         $this->actingAs($admin)->post(route('documentos.store'), [
             'titulo' => 'Política HTTP ' . Str::random(6),
             'categoria' => 'Políticas y Objetivos',
+            'prefijo' => 'PO',
             'tipo_accion' => 'Nuevo',
             'version' => '1.0',
             'requiere_firma_empleados' => '1',
@@ -49,6 +50,7 @@ class DocumentoFirmaRequerimientoTest extends TestCase
         $this->actingAs($admin)->post(route('documentos.store'), [
             'titulo' => 'Manual HTTP ' . Str::random(6),
             'categoria' => 'Manuales y Procedimientos',
+            'prefijo' => 'MA',
             'tipo_accion' => 'Nuevo',
             'version' => '1.0',
             'archivo' => UploadedFile::fake()->create('manual.pdf', 100),

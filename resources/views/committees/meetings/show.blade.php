@@ -5,16 +5,6 @@
     <a href="{{ route('committees.operations.show', $meeting->committee) }}" class="btn btn-outline-secondary mb-3">← Regresar</a>
     <h2>Reunión: {{ $meeting->subject }}</h2>
 
-    @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
-    @endif
-    @if($errors->any())
-        <div class="alert alert-danger">
-            <strong>Revise la información:</strong>
-            <ul class="mb-0">@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul>
-        </div>
-    @endif
-
     <p>Estado: <b>{{ $meeting->status }}</b> · {{ $meeting->meeting_date->format('d/m/Y') }} {{ substr((string) $meeting->start_time, 0, 5) }}</p>
 
     @php

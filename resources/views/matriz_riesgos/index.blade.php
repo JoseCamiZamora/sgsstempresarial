@@ -26,28 +26,6 @@
             </a>
         </div>
     </div>
-    <script>
-        @if(session('success'))
-            document.addEventListener('DOMContentLoaded', function() {
-                Swal.fire({
-                    icon: 'success',
-                    title: '¡Listo!',
-                    text: '{{ session("success") }}',
-                    timer: 2500,
-                    showConfirmButton: false
-                });
-            });
-        @endif
-        @if(session('error'))
-            Swal.fire({
-                icon: 'error',
-                title: 'Ups... algo salió mal',
-                text: "{{ session('error') }}",
-                confirmButtonColor: '#e74a3b',
-            });
-        @endif
-    </script>
-
     <div class="card shadow-sm border-0 mb-4">
         <div class="card-body p-0">
             <div class="table-responsive">
@@ -130,7 +108,6 @@
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const formularios = document.querySelectorAll('.form-eliminar');

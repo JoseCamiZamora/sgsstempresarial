@@ -5,10 +5,6 @@
 @php($approvedCandidatesCount = $formation->candidates->filter(fn($candidate) => $candidate->status->value === 'approved')->count())
 <div class="container-fluid mt-4">
     <a href="{{ route('committees.index') }}" class="text-secondary font-weight-bold"><i class="fa fa-arrow-left mr-1"></i> Volver a comités</a>
-    @if(session('success'))<div class="alert alert-success mt-3">{{ session('success') }}</div>@endif
-    @if(session('error'))<div class="alert alert-danger mt-3">{{ session('error') }}</div>@endif
-    @if($errors->any())<div class="alert alert-danger mt-3"><ul class="mb-0">@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>@endif
-
     <div class="d-flex justify-content-between align-items-center my-4">
         <div><h2 class="text-primary font-weight-bold">{{ $formation->committee->name }}</h2><p class="text-muted mb-0">{{ $formation->title }}</p></div>
         <div><a href="{{ route('committees.formations.edit', $formation) }}" class="btn btn-outline-primary mr-2">Editar información</a><span class="badge badge-warning px-3 py-2">{{ $formation->status->label() }}</span></div>

@@ -14,28 +14,6 @@
             <i class="fa fa-plus-circle"></i> Nueva Evaluación
         </a>
     </div>
-    <script>
-        @if(session('success'))
-            document.addEventListener('DOMContentLoaded', function() {
-                Swal.fire({
-                    icon: 'success',
-                    title: '¡Listo!',
-                    text: '{{ session("success") }}',
-                    timer: 2500,
-                    showConfirmButton: false
-                });
-            });
-        @endif
-        @if(session('error'))
-            Swal.fire({
-                icon: 'error',
-                title: 'Ups... algo salió mal',
-                text: "{{ session('error') }}",
-                confirmButtonColor: '#e74a3b',
-            });
-        @endif
-    </script>
-
     <div class="row mb-4">
         <div class="col-md-12">
             <div class="card shadow-sm border-left-info">

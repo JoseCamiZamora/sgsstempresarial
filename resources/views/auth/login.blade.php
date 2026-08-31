@@ -128,16 +128,6 @@
                     <span class="inactive">Registrarse</span>
                 </div>
 
-                @if ($errors->count() > 0)
-                    <div class="alert alert-danger p-2 small">
-                        <ul class="mb-0 pl-3">
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
-
                 <form id="form_login" method="post" autocomplete="off" action="{{ url('/login_externo') }}">
                     @csrf
                     

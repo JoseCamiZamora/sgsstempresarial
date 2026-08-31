@@ -15,5 +15,3 @@
  @can('transporte.reportes.ver')<a class="btn btn-outline-primary mr-2 mb-2" href="{{route('transport.reports.index')}}">Reportes</a>@endcan
  @can('transporte.configuracion.gestionar')<a class="btn btn-outline-primary mr-2 mb-2" href="{{route('transport.settings.edit')}}">Configuración</a>@endcan
 </div>
-@if(session('success'))<div class="alert alert-success">{{session('success')}}</div>@endif
-@if($errors->any())<div class="alert alert-danger"><strong>Revise la información:</strong><ul class="mb-0">@foreach($errors->all() as $error)<li>{{$error}}</li>@endforeach</ul></div>@endif

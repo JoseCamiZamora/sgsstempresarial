@@ -7,27 +7,6 @@
             <i class="fa fa-arrow-left mr-1"></i> Volver al Dashboard
         </a>
     </div>
-    <script>
-        @if(session('success'))
-            document.addEventListener('DOMContentLoaded', function() {
-                Swal.fire({
-                    icon: 'success',
-                    title: '¡Listo!',
-                    text: '{{ session("success") }}',
-                    timer: 2500,
-                    showConfirmButton: false
-                });
-            });
-        @endif
-        @if(session('error'))
-            Swal.fire({
-                icon: 'error',
-                title: 'Ups... algo salió mal',
-                text: "{{ session('error') }}",
-                confirmButtonColor: '#e74a3b',
-            });
-        @endif
-    </script>
     <div class="card shadow">
         <div class="card-header bg-dark text-white">
             <h5 class="mb-0">⚙️ Configuración de Estándares Mínimos (Res. 0312)</h5>

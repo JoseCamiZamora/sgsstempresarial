@@ -3,8 +3,6 @@
 <div class="container-fluid px-3 px-xl-4 py-4">@include('transport._nav')
 <h1>{{$service->scheduled_start_at->format('H:i')}} — {{$service->route_name_snapshot}}</h1><p>{{$service->service_date->format('d/m/Y')}} · <span class="badge badge-info">{{config('transport.service_statuses.'.$service->status,$service->status)}}</span></p>
 <div class="card mb-3"><div class="card-body"><div class="row"><div class="col-md-6"><h5>Programado</h5><p>{{$service->scheduled_start_at->format('d/m/Y H:i')}} — {{$service->scheduled_arrival_at->format('d/m/Y H:i')}}<br>Vehículo: {{$service->vehicle?->plate??'Sin asignar'}}<br>Conductor: {{$service->driver?->display_name??'Sin asignar'}}<br>Monitor: {{$service->monitor?->display_name??'Sin asignar'}}</p></div><div class="col-md-6"><h5>Operación real</h5><p>Salida: {{$service->actual_start_at?->format('d/m/Y H:i')??'Pendiente'}}<br>Llegada: {{$service->actual_arrival_at?->format('d/m/Y H:i')??'Pendiente'}}<br>Vehículo: {{$service->actualVehicle?->plate??'Pendiente'}}<br>Conductor: {{$service->actualDriver?->display_name??'Pendiente'}}<br>Transportados: {{$service->actual_passenger_count}}</p></div></div></div></div>
-@if($errors->any())<div class="alert alert-danger"><strong>Revise la información:</strong><ul class="mb-0">@foreach($errors->all() as $e)<li>{{$e}}</li>@endforeach</ul></div>@endif
-
 @if($actions['overdue'])
 <div class="alert alert-warning"><strong>Atención:</strong> la hora prevista de salida ya pasó y el servicio continúa programado. Puede completar la preparación y registrar posteriormente la salida real, reprogramar o cancelar.</div>
 @endif

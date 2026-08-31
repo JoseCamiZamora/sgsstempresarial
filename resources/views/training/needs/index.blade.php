@@ -1,10 +1,8 @@
 @extends('layouts.app')
 @section('content')
-<div class="container my-4">
+<div class="container-fluid my-4">
     <h2>Necesidades de capacitación</h2>
     @include('training.partials.nav')
-    @if(session('success'))<div class="alert alert-success">{{ session('success') }}</div>@endif
-    @if($errors->any())<div class="alert alert-danger">@foreach($errors->all() as $error)<div>{{ $error }}</div>@endforeach</div>@endif
     <button class="btn btn-primary mb-3" data-toggle="collapse" data-target="#newNeed">Nueva necesidad</button>
     <form id="newNeed" class="collapse card card-body mb-3 {{ $errors->any() ? 'show' : '' }}" method="POST" action="{{ route('training.needs.store') }}">
         @csrf
@@ -28,7 +26,7 @@
         <button class="btn btn-success mt-2">Guardar</button>
     </form>
     <table class="table"><thead><tr><th>Necesidad</th><th>Origen</th><th>Riesgos</th><th>Prioridad</th><th>Estado</th><th></th></tr></thead><tbody>
-    @foreach($needs as $need)<tr><td>{{ $need->title }}</td><td>{{ config('training.need_origins.'.$need->origin_type, ucfirst(str_replace('_', ' ', $need->origin_type))) }}</td><td>{{ $need->risks->pluck('clasificacion_peligro')->implode(', ') ?: 'Sin riesgos relacionados' }}</td><td>{{ config('training.priority_labels.'.$need->priority, ucfirst($need->priority)) }}</td><td>{{ config('training.need_status_labels.'.$need->status, ucfirst(str_replace('_', ' ', $need->status))) }}</td><td>@if($need->status === 'identified')<form method="POST" action="{{ route('training.needs.approve', $need) }}">@csrf<button class="btn btn-sm btn-success">Aprobar</button></form>@endif</td></tr>@endforeach
+    @foreach($needs as $need)<tr><td>{{ $need->title }}</td><td>{{ config('training.need_origins.'.$need->origin_type, ucfirst(str_replace('_', ' ', $need->origin_type))) }}</td><td>{{ $need->risks->pluck('clasificacion_peligro')->implode(', ') ?: 'Sin riesgos relacionados' }}</td><td>{{ config('training.priority_labels.'.$need->priority, ucfirst($need->priority)) }}</td><td>{{ config('training.need_status_labels.'.$need->status, ucfirst(str_replace('_', ' ', $need->status))) }}</td><td>@if($need->status === 'identified')<form method="POST" action="{{ route('training.needs.approve', $need) }}">@csrf<button class="btn btn-sm btn-success">Aprobar</button></form>@elseif($need->status === 'approved')<a class="btn btn-sm btn-outline-primary" href="{{ route('training.programs.items.create-from-need', ['need_id' => $need->id]) }}">Continuar a programar actividad</a>@endif</td></tr>@endforeach
     </tbody></table>
 </div>
 @endsection

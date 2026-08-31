@@ -13,17 +13,6 @@
                 </div>
                 
                 <div class="card-body">
-                    {{-- Manejo de Errores --}}
-                    @if ($errors->any())
-                        <div class="alert alert-danger shadow-sm">
-                            <ul class="mb-0">
-                                @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    @endif
-
                     <form action="{{ route('empleados.update', $empleado->id) }}" method="POST">
                         @csrf
                         @method('PUT') {{-- CRUCIAL: Indica a Laravel que es una actualización --}}

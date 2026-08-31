@@ -4,14 +4,12 @@
 @include('training.partials.nav')
 <a class="btn btn-sm btn-outline-secondary mb-2" href="{{ route('training.programs.index') }}">← Regresar a programas</a><h2>{{ $p->title }} <small>v{{ $p->version }}</small></h2>
 <p>Estado: <span class="badge badge-info">{{ config('training.program_status_labels.'.$p->status, ucfirst(str_replace('_', ' ', $p->status))) }}</span> · Actividades: {{ $p->items->count() }} · Pendientes: {{ $pending->count() }}</p>
-@if(session('success'))<div class="alert alert-success">{{ session('success') }}</div>@endif
-@if($errors->any())<div class="alert alert-danger">@foreach($errors->all() as $error)<div>{{ $error }}</div>@endforeach</div>@endif
 <div class="mb-3"><a class="btn btn-outline-danger" href="{{ route('training.programs.pdf', $p) }}">PDF</a> <a class="btn btn-outline-success" href="{{ route('training.programs.excel', $p) }}">Excel</a>
 @if($p->status === 'draft')<form class="d-inline" method="POST" action="{{ route('training.programs.submit', $p) }}">@csrf<button class="btn btn-warning">Enviar a revisión</button></form>
 @elseif($p->status === 'in_review')<form class="d-inline" method="POST" action="{{ route('training.programs.approve', $p) }}">@csrf<input name="justification" placeholder="Justificación si hay prioridades pendientes"><button class="btn btn-success">Aprobar</button></form>
 @elseif($p->status === 'approved')<form class="d-inline" method="POST" action="{{ route('training.programs.activate', $p) }}">@csrf<button class="btn btn-primary">Activar</button></form>@endif
 @if(in_array($p->status, ['approved','active','closed']))<form class="d-inline" method="POST" action="{{ route('training.programs.version', $p) }}">@csrf<button class="btn btn-outline-primary">Crear nueva versión</button></form>@endif</div>
-<div class="row"><div class="col-lg-8"><h4>Matriz de planificación</h4>
+<div class="row"><div class="col-lg-8"><h4>Actividades planificadas</h4>
 <table class="table table-sm"><thead><tr><th>Necesidad</th><th>Origen</th><th>Prioridad</th><th>Actividad</th><th>Mes</th><th>Estado</th><th>Ejecución</th></tr></thead><tbody>
 @foreach($p->items as $item) @foreach($item->needs as $need)<tr><td>{{ $need->title }}</td><td>{{ config('training.need_origins.'.$need->origin_type) }}</td><td>{{ config('training.priority_labels.'.$need->priority, ucfirst($need->priority)) }}</td><td>{{ $item->title }}</td><td>{{ $item->planned_month }}</td><td>{{ config('training.program_item_status_labels.'.$item->status, ucfirst(str_replace('_', ' ', $item->status))) }}</td><td><a class="btn btn-sm btn-outline-primary" href="{{ route('training.sessions.create-from-item', $item) }}">Programar sesión</a></td></tr>@endforeach @endforeach
 @foreach($pending as $need)<tr class="table-warning"><td>{{ $need->title }}</td><td>{{ config('training.need_origins.'.$need->origin_type) }}</td><td>{{ config('training.priority_labels.'.$need->priority, ucfirst($need->priority)) }}</td><td>—</td><td>—</td><td>Pendiente</td><td>—</td></tr>@endforeach

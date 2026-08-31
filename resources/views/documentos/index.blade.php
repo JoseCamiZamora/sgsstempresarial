@@ -13,21 +13,18 @@
             <p class="text-muted small mt-1">Biblioteca oficial de políticas, manuales y formatos del sistema.</p>
         </div>
         
-        @hasanyrole('Super Admin|Administrador SGSST')
-        <a href="{{ route('documentos.create') }}" class="btn shadow-sm" style="background-color: #36b9cc; color: white; font-weight: bold;">
-            <i class="fa fa-upload mr-1"></i> Subir Documento
-        </a>
-        @endhasanyrole
+        <div>
+            <a href="{{ route('documentos.export') }}" class="btn btn-outline-success shadow-sm">
+                <i class="fa fa-file-excel-o mr-1"></i> Descargar Reporte Excel
+            </a>
+            @hasanyrole('Super Admin|Administrador SGSST')
+            <a href="{{ route('documentos.create') }}" class="btn shadow-sm" style="background-color: #36b9cc; color: white; font-weight: bold;">
+                <i class="fa fa-upload mr-1"></i> Subir Documento
+            </a>
+            @endhasanyrole
+        </div>
     </div>
 
-    @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="fa fa-check-circle mr-1"></i> {{ session('success') }}
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-    @endif
 
     <div class="card shadow-sm border-0 mb-4">
         <div class="card-body p-0">
@@ -116,7 +113,6 @@
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const formularios = document.querySelectorAll('.form-eliminar');

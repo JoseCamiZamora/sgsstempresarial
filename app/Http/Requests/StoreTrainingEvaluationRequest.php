@@ -1,0 +1,7 @@
+<?php
+namespace App\Http\Requests;use Illuminate\Foundation\Http\FormRequest;
+class StoreTrainingEvaluationRequest extends FormRequest{
+ public function authorize(){return$this->user()?->can('capacitaciones.evaluaciones.crear')??false;}
+ public function rules(){return['training_session_id'=>'required|exists:training_sessions,id','training_topic_id'=>'required|exists:training_topics,id','title'=>'required|string|max:255','instructions'=>'required|string|max:3000','evaluation_type'=>'required|in:knowledge_quiz,practical_checklist,instructor_assessment,mixed,external','evaluation_phase'=>'required|in:pre_test,post_test','passing_score'=>'required|numeric|min:0|max:100','maximum_attempts'=>'nullable|integer|min:1|max:10','time_limit_minutes'=>'nullable|integer|min:1','show_result_immediately'=>'required|boolean','show_correct_answers'=>'required|boolean','requires_reinforcement'=>'required|boolean','requires_confirmed_attendance'=>'required|boolean','issues_internal_certificate'=>'required|boolean','opens_at'=>'nullable|date','closes_at'=>'nullable|date|after:opens_at'];}
+ public function attributes(){return['training_session_id'=>'sesión de capacitación','training_topic_id'=>'tema del banco de preguntas','title'=>'título','instructions'=>'instrucciones','evaluation_type'=>'tipo de evaluación','evaluation_phase'=>'fase de evaluación','passing_score'=>'puntaje mínimo','maximum_attempts'=>'intentos máximos','time_limit_minutes'=>'límite de minutos','opens_at'=>'fecha de apertura','closes_at'=>'fecha de cierre'];}
+}
