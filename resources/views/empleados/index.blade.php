@@ -11,15 +11,30 @@
             <h2 class="font-weight-bold text-primary">👥 Directorio de Empleados</h2>
             <p class="text-muted">Gestión integral de personal y perfiles sociodemográficos.</p>
         </div>
-        <div>
-            <button type="button" class="btn btn-outline-primary btn-lg shadow-sm" data-toggle="modal" data-target="#modalCargaMasiva">
+        <div class="emp-toolbar">
+            <button type="button" class="btn btn-success shadow-sm mr-2" data-toggle="modal" data-target="#modalCargaMasiva">
                 <i class="fa fa-file-excel mr-2"></i> Cargue Masivo
             </button>
-            <a href="{{ route('empleados.create') }}" class="btn btn-primary btn-lg shadow-sm">
+            <a href="{{ route('empleados.create') }}" class="btn btn-primary shadow-sm">
                 <i class="fa fa-user-plus mr-2"></i> Nuevo Empleado
             </a>
         </div>
     </div>
+
+    <style>
+        /* brisas.css fija un alto/padding pequeño solo para .btn-primary, distinto del tamaño
+           normal de Bootstrap. Se fija un tamaño explícito e igual para ambos botones. */
+        .emp-toolbar .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            height: auto;
+            padding: 0.375rem 0.9rem;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            border-radius: 0.25rem;
+        }
+    </style>
 
     <div class="modal fade" id="modalCargaMasiva" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-dialog-centered" role="document">

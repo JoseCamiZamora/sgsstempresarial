@@ -40,24 +40,25 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users',
             'password' => 'required|min:8',
-            'rol' => 'required|exists:roles,name',
+            'roles' => 'required|array|min:1',
+            'roles.*' => 'exists:roles,name',
             'estado' => 'required'
         ], [
             // Aquí ponemos los mensajes personalizados
             'identificacion.required' => 'El número de identificación es obligatorio.',
             'identificacion.unique'   => 'Esta identificación ya está registrada en el sistema.',
-            
+
             'name.required'        => 'El nombre completo es obligatorio.',
             'name.max'             => 'El nombre es demasiado largo.',
-            
+
             'email.required'          => 'El correo electrónico es obligatorio.',
             'email.email'             => 'Debes ingresar un formato de correo válido (ej: usuario@empresa.com).',
             'email.unique'            => 'Este correo electrónico ya está en uso por otro usuario.',
-            
+
             'password.required'       => 'La contraseña es obligatoria.',
             'password.min'            => 'La contraseña debe tener mínimo 8 caracteres por seguridad.',
-            
-            'rol.required'            => 'Debes asignarle un rol al usuario.',
+
+            'roles.required'          => 'Debes asignarle al menos un rol al usuario.',
             'estado.required'         => 'Debes definir el estado del usuario.'
         ]);
 
@@ -72,8 +73,8 @@ class UserController extends Controller
             'tipo' => 1 // Asumo que 1 es el valor por defecto que usaste en tu BD
         ]);
 
-        // 3. Le asignamos el rol de Spatie
-        $usuario->assignRole($request->rol);
+        // 3. Le asignamos los roles de Spatie (puede tener varios)
+        $usuario->syncRoles($request->roles);
 
         // 4. Redirigimos a la tabla con un mensaje de éxito
         return redirect()->route('usuarios.index')
@@ -95,10 +96,10 @@ class UserController extends Controller
     {
         $usuario = User::findOrFail($id);
         $roles = Role::all();
-        // Obtenemos el nombre del primer rol que tenga asignado
-        $userRole = $usuario->roles->pluck('name')->first(); 
-        
-        return view('usuarios.edit', compact('usuario', 'roles', 'userRole'));
+        // Nombres de todos los roles que tenga asignados (puede tener varios)
+        $userRoles = $usuario->roles->pluck('name')->all();
+
+        return view('usuarios.edit', compact('usuario', 'roles', 'userRoles'));
     }
 
     /**
@@ -113,7 +114,8 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $id,
             'password' => 'nullable|min:8', // 'nullable' porque si lo deja en blanco, no cambiamos la clave
-            'rol' => 'required|exists:roles,name',
+            'roles' => 'required|array|min:1',
+            'roles.*' => 'exists:roles,name',
             'estado' => 'required'
         ], [
             'identificacion.unique' => 'Esta identificación ya pertenece a otro usuario.',
@@ -139,8 +141,8 @@ class UserController extends Controller
         // Actualizamos en la base de datos
         $usuario->update($data);
 
-        // syncRoles quita el rol viejo y le pone el nuevo automáticamente
-        $usuario->syncRoles([$request->rol]);
+        // syncRoles quita los roles viejos y deja exactamente los seleccionados (puede ser más de uno)
+        $usuario->syncRoles($request->roles);
 
         return redirect()->route('usuarios.index')
                          ->with('success', 'Los datos del usuario han sido actualizados.');

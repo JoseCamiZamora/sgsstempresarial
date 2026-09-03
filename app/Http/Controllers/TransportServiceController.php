@@ -3,8 +3,10 @@ namespace App\Http\Controllers;
 use App\Http\Requests\{AddTransportServicePassengerRequest,CancelTransportServiceRequest,ExcludeTransportServicePassengerRequest,RescheduleTransportServiceRequest,StoreTransportServiceRequest};
 use App\Models\{Empleado,TransportChecklistTemplate,TransportPassenger,TransportPerson,TransportRoute,TransportService,TransportVehicle};
 use App\Services\{TransportPassengerResolverService,TransportSchedulingService,TransportServiceActionService,TransportServicePreparationService};
+use App\Traits\AuthorizesCompanyOwnership;
 use Carbon\Carbon;use Illuminate\Http\Request;
 class TransportServiceController extends Controller{
+ use AuthorizesCompanyOwnership;
  public function index(Request$r){$c=$r->user()->company_id;$date=$r->filled('date')?Carbon::parse($r->input('date')):today();$q=TransportService::forCompany($c)->with(['vehicle','driver.employee','monitor.employee','passengers'])->whereDate('service_date',$date)->orderBy('scheduled_start_at');foreach(['transport_route_id','planned_vehicle_id','planned_driver_id','planned_monitor_id','shift','service_type','status']as$f)if($r->filled($f))$q->where($f,$r->$f);return view('transport.operation.index',['services'=>$q->get(),'date'=>$date]+$this->resources($c));}
  public function create(){return view('transport.services.create',$this->resources(auth()->user()->company_id));}
  public function store(StoreTransportServiceRequest$r,TransportSchedulingService$service){$s=$service->create($r->validated(),$r->user()->company_id,$r->user()->id);return redirect()->route('transport.services.show',$s)->with('success','Servicio individual programado.');}
@@ -17,5 +19,4 @@ class TransportServiceController extends Controller{
  public function add(AddTransportServicePassengerRequest$r,TransportService$service,TransportSchedulingService$scheduling){$this->own($service);$p=TransportPassenger::forCompany($service->company_id)->findOrFail($r->validated('transport_passenger_id'));$scheduling->addPassenger($service,$p,$r->validated('reason'),$r->user()->id);return back()->with('success','Pasajero excepcional agregado.');}
  public function exclude(ExcludeTransportServicePassengerRequest$r,TransportService$service,int$passenger,TransportSchedulingService$scheduling){$this->own($service);$scheduling->excludePassenger($service,$passenger,$r->validated('reason'),$r->user()->id);return back()->with('success','Pasajero excluido sólo de este servicio.');}
  private function resources(int$c):array{return['routes'=>TransportRoute::forCompany($c)->where('status','active')->orderBy('name')->get(),'vehicles'=>TransportVehicle::forCompany($c)->where('status','active')->get(),'drivers'=>TransportPerson::forCompany($c)->with('employee')->where('status','active')->where('is_driver',1)->get(),'monitors'=>TransportPerson::forCompany($c)->with('employee')->where('status','active')->where('is_monitor',1)->get()];}
- private function own($m):void{abort_unless((int)$m->company_id===(int)auth()->user()->company_id,404);}
 }

@@ -25,6 +25,11 @@ class Empleado extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    public function company()
+    {
+        return $this->belongsTo(PerfilEmpresa::class, 'company_id');
+    }
     public function documentos()
     {
         return $this->hasMany(EmpleadoDocumento::class);

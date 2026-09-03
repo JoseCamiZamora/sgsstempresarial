@@ -1,26 +1,16 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container-fluid mt-4">
-    <a href="{{ route('empleados.index') }}" class="text-decoration-none text-secondary mb-2 d-inline-block font-weight-bold">
-        <i class="fa fa-arrow-left mr-1"></i> Volver al Directorio
+<div class="container-fluid px-3 px-xl-4 py-4">
+    @include('transport._nav')
+
+    <a href="{{ route('transport.pasajeros.index') }}" class="text-decoration-none text-secondary mb-2 d-inline-block font-weight-bold">
+        <i class="fa fa-arrow-left mr-1"></i> Volver a Pasajeros
     </a>
-    <div class="mb-4 d-flex justify-content-between align-items-start flex-wrap">
-        <div>
-            <h2 class="font-weight-bold text-primary">📥 Resultado del Cargue Masivo</h2>
-            <p class="text-muted mb-0">Revise el detalle fila por fila. Los códigos de firma solo se muestran aquí una vez — cópielos ahora.</p>
-        </div>
-        <div class="mt-2">
-            <a href="{{ route('empleados.import.export') }}" class="btn btn-outline-success shadow-sm">
-                <i class="fa fa-file-excel mr-1"></i> Exportar a Excel
-            </a>
-            <form method="POST" action="{{ route('empleados.import.notify') }}" class="d-inline" id="notifyImportForm">
-                @csrf
-                <button class="btn btn-outline-primary shadow-sm" {{ $creados > 0 ? '' : 'disabled' }}>
-                    <i class="fa fa-envelope mr-1"></i> Notificar por correo
-                </button>
-            </form>
-        </div>
+
+    <div class="mb-4">
+        <h2 class="font-weight-bold text-primary">📥 Resultado del Cargue Masivo de Pasajeros</h2>
+        <p class="text-muted mb-0">Revise el detalle fila por fila.</p>
     </div>
 
     <div class="row mb-4">
@@ -57,18 +47,15 @@
                     <thead class="bg-light">
                         <tr>
                             <th class="border-0">Fila</th>
-                            <th class="border-0">Cédula</th>
                             <th class="border-0">Nombre</th>
                             <th class="border-0">Estado</th>
                             <th class="border-0">Detalle</th>
-                            <th class="border-0">Código de firma</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($resultados as $r)
                         <tr class="{{ $r['status'] === 'ok' ? '' : 'table-danger' }}">
                             <td class="align-middle">{{ $r['row'] }}</td>
-                            <td class="align-middle">{{ $r['cedula'] ?: '—' }}</td>
                             <td class="align-middle">{{ $r['nombre'] ?: '—' }}</td>
                             <td class="align-middle">
                                 @if($r['status'] === 'ok')
@@ -78,17 +65,10 @@
                                 @endif
                             </td>
                             <td class="align-middle">{{ $r['message'] }}</td>
-                            <td class="align-middle">
-                                @if($r['portal_code'])
-                                    <code class="font-weight-bold">{{ $r['portal_code'] }}</code>
-                                @else
-                                    —
-                                @endif
-                            </td>
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="6" class="text-center py-5 text-muted">No se procesó ninguna fila.</td>
+                            <td colspan="4" class="text-center py-5 text-muted">No se procesó ninguna fila.</td>
                         </tr>
                         @endforelse
                     </tbody>
@@ -97,22 +77,4 @@
         </div>
     </div>
 </div>
-@endsection
-@section('scripts')
-<script>
-    document.getElementById('notifyImportForm').addEventListener('submit', function (e) {
-        e.preventDefault();
-        var form = this;
-        Swal.fire({
-            title: '¿Enviar los datos de acceso?',
-            text: 'Se enviará por correo la cédula, el código de firma y el enlace del portal a los {{ $creados }} empleados creados en este cargue.',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Enviar correos',
-            cancelButtonText: 'Cancelar',
-        }).then(function (r) {
-            if (r.isConfirmed) form.submit();
-        });
-    });
-</script>
 @endsection

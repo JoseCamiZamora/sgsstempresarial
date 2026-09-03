@@ -52,13 +52,16 @@
                         </div>
 
                         <div class="form-group mb-4">
-                            <label class="font-weight-bold text-muted small">Rol en el Sistema</label>
-                            <select name="rol" class="form-control" required>
-                                <option value="" disabled selected>Seleccione un rol...</option>
+                            <label class="font-weight-bold text-muted small">Roles en el Sistema</label>
+                            <div class="border rounded p-2">
                                 @foreach($roles as $rol)
-                                    <option value="{{ $rol->name }}">{{ $rol->name }}</option>
+                                    <label class="d-block font-weight-normal mb-1">
+                                        <input type="checkbox" name="roles[]" value="{{ $rol->name }}" {{ in_array($rol->name, old('roles', [])) ? 'checked' : '' }}>
+                                        {{ $rol->name }}
+                                    </label>
                                 @endforeach
-                            </select>
+                            </div>
+                            <small class="text-muted">Puede marcar más de uno si el usuario necesita varios accesos a la vez.</small>
                         </div>
                     </div>
                 </div>

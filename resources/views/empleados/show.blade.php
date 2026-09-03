@@ -21,11 +21,28 @@
                 Swal.fire({
                     icon: 'success',
                     title: 'Código de firma generado',
-                    html: 'Anótelo y compártalo con el empleado ahora — no podrá volver a verlo.<br><h3 class="mt-2">{{ session("portal_code_generated") }}</h3><p class="small text-muted mb-0">Enlace: {{ route("employee-portal.login") }}</p>',
+                    html: 'Anótelo y compártalo con el empleado ahora — no podrá volver a verlo.<br><h3 class="mt-2">{{ session("portal_code_generated") }}</h3><p class="small text-muted mb-0">Enlace: {{ route("employee-portal.login") }}</p>@if(session()->has("portal_code_mail_sent"))<p class="small mt-2 mb-0 {{ session("portal_code_mail_sent") ? "text-success" : "text-danger" }}">{{ session("portal_code_mail_sent") ? "✓ Correo con los datos de acceso enviado a ".$empleado->email_personal : "✗ No se pudo enviar el correo automáticamente. Copie el código y compártalo manualmente." }}</p>@endif',
                     confirmButtonText: 'Listo',
                 });
             });
         @endif
+
+        document.addEventListener('DOMContentLoaded', function () {
+            var regenerateForm = document.getElementById('regenerateCodeForm');
+            regenerateForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                Swal.fire({
+                    title: '{{ $empleado->portalCredential ? "¿Regenerar el código de firma?" : "¿Generar el código de firma?" }}',
+                    text: '{{ $empleado->portalCredential ? "El código anterior dejará de funcionar de inmediato." : "Se creará un código nuevo y se enviará al empleado por correo." }}',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: '{{ $empleado->portalCredential ? "Regenerar" : "Generar" }}',
+                    cancelButtonText: 'Cancelar',
+                }).then(function (r) {
+                    if (r.isConfirmed) regenerateForm.submit();
+                });
+            });
+        });
     </script>
 
     <div class="row">
@@ -70,7 +87,7 @@
                             </button>
                         </div>
                     </div>
-                    <form method="POST" action="{{ route('empleados.portal.regenerate', $empleado->id) }}" onsubmit="return confirm('¿Generar un nuevo código de firma para este empleado? El código anterior dejará de funcionar de inmediato.');">
+                    <form method="POST" action="{{ route('empleados.portal.regenerate', $empleado->id) }}" id="regenerateCodeForm">
                         @csrf
                         <button class="btn btn-outline-primary btn-sm btn-block">
                             {{ $empleado->portalCredential ? 'Regenerar código de firma' : 'Generar código de firma' }}

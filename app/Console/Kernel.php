@@ -31,7 +31,6 @@ class Kernel extends ConsoleKernel
         $schedule->command('sgsst:close-expired-attendance')->everyFiveMinutes()->withoutOverlapping();
         $schedule->command('sgsst:training-reminders')->everyFiveMinutes()->withoutOverlapping();
         $schedule->command('sgsst:check-training-alerts')->dailyAt('06:30')->withoutOverlapping();
-        $schedule->command('transport:check-scheduling')->everyThirtyMinutes()->withoutOverlapping();
         $schedule->command('transport:check-control')->everyThirtyMinutes()->withoutOverlapping();
     }
 

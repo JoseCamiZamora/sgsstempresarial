@@ -143,7 +143,7 @@
 @if($service->status==='preoperational')<div class="card mb-3"><div class="card-header">2. Registrar salida</div><div class="card-body"><form method="POST" action="{{route('transport.operation.departure',$service)}}">@csrf<div class="form-row"><div class="col"><input type="number" step="0.01" min="0" name="departure_odometer" class="form-control" placeholder="Kilometraje de salida (opcional según configuración)"></div><div class="col-auto"><button class="btn btn-primary">Registrar salida ahora</button></div></div><small>La hora se toma exclusivamente del servidor.</small></form></div></div>@endif
 
 @if($service->status==='in_progress')
-<div class="row"><div class="col-lg-7"><div class="card mb-3"><div class="card-header">3. Pasajeros</div><div class="card-body"><table class="table table-sm"><tr><th>Nombre</th><th>Estado operacional</th></tr>@foreach($service->passengers->where('status','!=','excluded') as $p)<tr><td>{{$p->passenger_name_snapshot}}</td><td><form method="POST" action="{{route('transport.operation.passengers.update',[$service,$p->id])}}">@csrf @method('PUT')<select name="status" class="form-control form-control-sm" onchange="this.form.submit()"><option value="expected" @selected($p->status==='expected')>Esperado</option><option value="boarded" @selected($p->status==='boarded')>Abordó</option><option value="absent" @selected($p->status==='absent')>Ausente</option></select></form></td></tr>@endforeach</table></div></div></div>
+<div class="row"><div class="col-lg-7"><div class="card mb-3"><div class="card-header">3. Pasajeros</div><div class="card-body"><table class="table table-sm"><tr><th>Nombre</th><th>Estado operacional</th></tr>@foreach($service->passengers->where('status','!=','excluded') as $p)<tr><td>{{$p->passenger_name_snapshot}}@if($p->status==='absent' && $p->status_observation)<br><small class="text-muted">Motivo: {{$p->status_observation}}</small>@endif</td><td><form method="POST" action="{{route('transport.operation.passengers.update',[$service,$p->id])}}" class="passenger-status-form">@csrf @method('PUT')<input type="hidden" name="observation" value="{{$p->status_observation}}"><select name="status" class="form-control form-control-sm passenger-status-select" data-original="{{$p->status}}"><option value="expected" @selected($p->status==='expected')>Esperado</option><option value="boarded" @selected($p->status==='boarded')>Abordó</option><option value="absent" @selected($p->status==='absent')>Ausente</option></select></form></td></tr>@endforeach</table></div></div></div>
 <div class="col-lg-5"><div class="card mb-3"><div class="card-header">Cambiar recurso real</div><div class="card-body">@foreach(['vehicle'=>['Vehículo',$vehicles],'driver'=>['Conductor',$drivers],'monitor'=>['Monitor',$monitors]] as $type=>$resource)<form method="POST" action="{{route('transport.operation.resources.change',[$service,$type])}}" class="mb-3">@csrf<label>{{$resource[0]}}</label><div class="form-row"><div class="col"><select name="resource_id" class="form-control">@foreach($resource[1] as $r)<option value="{{$r->id}}">{{$type==='vehicle'?$r->plate:$r->display_name}}</option>@endforeach</select><input name="reason" minlength="10" class="form-control mt-1" placeholder="Motivo" required></div><div class="col-auto"><button class="btn btn-outline-warning">Cambiar</button></div></div></form>@endforeach</div></div></div></div>
 <div class="card mb-3"><div class="card-header">4. Registrar llegada</div><div class="card-body"><form method="POST" action="{{route('transport.operation.arrival',$service)}}">@csrf<div class="form-row"><div class="col"><select name="receiver_employee_id" class="form-control"><option value="">Responsable externo</option>@foreach($employees as $e)<option value="{{$e->id}}">{{$e->nombre_completo}}</option>@endforeach</select></div><div class="col"><input name="receiver_name" class="form-control" placeholder="Nombre si es externo"></div><div class="col"><input type="number" step="0.01" min="0" name="arrival_odometer" class="form-control" placeholder="Kilometraje llegada"></div></div><textarea name="observation" class="form-control my-2" placeholder="Observación"></textarea><p>Registro mi firma como evidencia de la recepción/verificación de llegada del servicio indicado.</p><canvas id="arrivalSignature" data-signature-pad data-signature-input="arrival_signature" data-signature-required="0" style="width:100%;height:220px;border:2px solid #94a3b8;touch-action:none;background:#fff"></canvas><input type="hidden" name="signature" id="arrival_signature"><button type="button" data-signature-clear="arrivalSignature" class="btn btn-outline-secondary my-2">Borrar firma</button><button class="btn btn-success btn-block">Confirmar llegada ahora</button></form></div></div>
 @endif
@@ -165,4 +165,42 @@
 @endif
 <div class="card mt-3"><div class="card-header">Historial trazable</div><div class="card-body">@forelse($service->changes as $c)<p>{{$c->changed_at->format('d/m/Y H:i')}} — {{$c->change_type}}<br><small>{{$c->reason}}</small></p>@empty<p>Sin cambios de programación o recursos.</p>@endforelse</div></div>
 </div><script src="{{asset('js/signature-canvas.js')}}"></script>
+<script>
+document.querySelectorAll('.passenger-status-select').forEach(function (select) {
+    select.addEventListener('change', function () {
+        var form = select.closest('form');
+        var observationInput = form.querySelector('input[name="observation"]');
+
+        if (select.value !== 'absent') {
+            observationInput.value = '';
+            form.submit();
+            return;
+        }
+
+        if (typeof Swal === 'undefined') {
+            observationInput.value = window.prompt('Motivo de la ausencia (opcional):', '') || '';
+            form.submit();
+            return;
+        }
+
+        Swal.fire({
+            title: 'Marcar como ausente',
+            input: 'text',
+            inputLabel: 'Motivo de la ausencia (opcional)',
+            inputPlaceholder: 'Ej. enfermedad, permiso, no salió de casa…',
+            inputValue: observationInput.value || '',
+            showCancelButton: true,
+            confirmButtonText: 'Guardar',
+            cancelButtonText: 'Cancelar',
+        }).then(function (r) {
+            if (r.isConfirmed) {
+                observationInput.value = r.value || '';
+                form.submit();
+            } else {
+                select.value = select.dataset.original;
+            }
+        });
+    });
+});
+</script>
 @endsection

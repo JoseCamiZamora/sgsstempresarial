@@ -11,8 +11,10 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use App\Services\EmployeePortalAccessService;
+use App\Services\EmployeeCredentialNotificationService;
 use App\Imports\EmpleadosImport;
 use App\Exports\EmpleadosImportTemplateExport;
+use App\Exports\EmpleadosCargueResultadoExport;
 use Maatwebsite\Excel\Facades\Excel;
 
 class EmpleadoController extends Controller
@@ -29,13 +31,14 @@ class EmpleadoController extends Controller
         return view('empleados.create', compact('usuarios'));
     }
 
-    public function store(Request $request)
+    public function store(Request $request, EmployeePortalAccessService $portalAccess)
     {
         // 1. Validación combinada
         $rules = [
             'nombre_completo' => 'required|string|max:255',
             'cedula'          => 'required|unique:empleados,cedula',
             'cargo'           => 'required',
+            'email_personal'  => 'required|email',
         ];
 
         if ($request->has('crear_usuario')) {
@@ -67,18 +70,34 @@ class EmpleadoController extends Controller
             // 4. Preparamos y limpiamos los datos del Empleado
             $data = $request->all();
             $data['user_id'] = $userId; // Vinculamos el ID recién creado (si existe)
-            
+            $data['company_id'] = auth()->user()->company_id;
+
             if ($request->filled('salario')) {
                 $data['salario'] = str_replace('.', '', $request->salario);
             }
 
             // 5. Creamos el Empleado
-            Empleado::create($data);
+            $empleado = Empleado::create($data);
+
+            // 6. Generamos su código de acceso al portal de firmas
+            $portalCode = $portalAccess->regenerate($empleado, auth()->id());
 
             // Si todo salió bien, guardamos cambios en la DB
             DB::commit();
 
-            return redirect()->route('empleados.index')->with('success', 'Empleado y Usuario creados correctamente.');
+            // 7. El envío de correo es un efecto externo: se hace después del commit
+            // y nunca bloquea la creación del empleado si falla.
+            $mailSent = app(EmployeeCredentialNotificationService::class)->sendCredentials(
+                $empleado->email_personal,
+                $empleado->nombre_completo,
+                $empleado->cedula,
+                $portalCode,
+                $this->companyName()
+            );
+
+            return redirect()->route('empleados.show', $empleado->id)
+                ->with('portal_code_generated', $portalCode)
+                ->with('portal_code_mail_sent', $mailSent);
 
         } catch (\Exception $e) {
             // Si algo falló, deshacemos todo lo que se alcanzó a hacer
@@ -192,12 +211,53 @@ class EmpleadoController extends Controller
         ]);
     }
 
+    public function exportImportResult()
+    {
+        if (!session()->has('import_resultado')) {
+            return redirect()->route('empleados.index');
+        }
+
+        return Excel::download(
+            new EmpleadosCargueResultadoExport(session('import_resultado', [])),
+            'empleados_cargue_masivo.xlsx'
+        );
+    }
+
+    public function notifyImportResult(EmployeeCredentialNotificationService $notifier)
+    {
+        if (!session()->has('import_resultado')) {
+            return redirect()->route('empleados.index');
+        }
+
+        $summary = $notifier->sendBulk(session('import_resultado', []), $this->companyName());
+
+        $message = "Correos enviados: {$summary['sent']}.";
+        if ($summary['failed'] > 0) {
+            $message .= " Fallaron: {$summary['failed']}.";
+        }
+        if ($summary['skipped'] > 0) {
+            $message .= " Sin correo registrado: {$summary['skipped']}.";
+        }
+
+        return back()->with($summary['failed'] > 0 ? 'warning' : 'success', $message);
+    }
+
     public function regeneratePortalCode($id, EmployeePortalAccessService $access)
     {
         $empleado = Empleado::findOrFail($id);
         $code = $access->regenerate($empleado, auth()->id());
 
-        return back()->with('portal_code_generated', $code);
+        $mailSent = app(EmployeeCredentialNotificationService::class)->sendCredentials(
+            $empleado->email_personal,
+            $empleado->nombre_completo,
+            $empleado->cedula,
+            $code,
+            $this->companyName()
+        );
+
+        return back()
+            ->with('portal_code_generated', $code)
+            ->with('portal_code_mail_sent', $mailSent);
     }
 
     public function destroy($id)
@@ -218,18 +278,30 @@ class EmpleadoController extends Controller
             }
 
             // 2. ELIMINAR REGISTROS
-            // Como en la migración usamos onDelete('cascade'), 
+            // Como en la migración usamos onDelete('cascade'),
             // al borrar al empleado se borrarán automáticamente sus documentos en la DB.
+            $userId = $empleado->user_id;
+
             $empleado->delete();
+
+            // 3. Si el empleado tenía una cuenta de usuario asociada, se elimina también.
+            if ($userId) {
+                User::find($userId)?->delete();
+            }
 
             DB::commit();
 
             return redirect()->route('empleados.index')
-                            ->with('success', 'Empleado y todo su expediente digital han sido eliminados.');
+                            ->with('success', 'Empleado, su expediente digital' . ($userId ? ' y su cuenta de usuario' : '') . ' han sido eliminados.');
 
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Error al eliminar: ' . $e->getMessage());
         }
+    }
+
+    private function companyName(): string
+    {
+        return auth()->user()->company?->razon_social ?? 'SG-SST';
     }
 }
