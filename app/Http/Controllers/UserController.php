@@ -64,6 +64,7 @@ class UserController extends Controller
 
         // 2. Creamos el usuario en la base de datos
         $usuario = User::create([
+            'company_id' => auth()->user()->company_id,
             'identificacion' => $request->identificacion,
             'name' => $request->name,
             'email' => $request->email,
